@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASS — Server Service | El servidor todo-en-uno en Rust</title>
+  <meta name="description" content="ASS reemplaza Nginx, Certbot, PM2 y ngrok con un único binario ultraligero escrito en Rust. Proxy inverso, TLS automático, gestión de procesos y túneles en un solo archivo de configuración." />
+  <meta property="og:title" content="ASS — Server Service" />
+  <meta property="og:description" content="Un binario. Cero dependencias. Todo tu servidor." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+  <link rel="stylesheet" href="assets/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ═══════════════════ NAV ═══════════════════ -->
+<nav class="nav" id="nav">
+  <div class="nav__inner">
+    <a href="#" class="nav__logo">
+      <span class="logo-icon">⚡</span>
+      <span class="logo-text">SS</span>
+    </a>
+    <ul class="nav__links">
+      <li><a href="#features">Características</a></li>
+      <li><a href="#install">Instalación</a></li>
+      <li><a href="#config">Configuración</a></li>
+      <li><a href="#download">Descargar</a></li>
+      <li><a href="https://github.com/ass-project/ass-src" target="_blank" class="nav__gh">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.1.82-.26.82-.58v-2.03c-3.34.72-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.23 1.84 1.23 1.07 1.84 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a></li>
+    </ul>
+    <button class="nav__hamburger" id="hamburger" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<section class="hero">
+  <div class="hero__bg">
+    <div class="grid-lines"></div>
+    <div class="glow glow--blue"></div>
+    <div class="glow glow--purple"></div>
+  </div>
+  <div class="container hero__content">
+    <div class="hero__badge">
+      <span class="badge__dot"></span>
+      Escrito en Rust · v0.1.0 · MIT License
+    </div>
+    <h1 class="hero__title">
+      Un binario.<br>
+      <span class="gradient-text">Cero dependencias.</span><br>
+      Todo tu servidor.
+    </h1>
+    <p class="hero__sub">
+      ASS reemplaza Nginx, Certbot, PM2 y ngrok con un único ejecutable de <strong>6.5 MB</strong>.
+      Proxy inverso, TLS automático, supervisión de procesos, firewall y túneles,
+      todo desde un solo <code>ass.toml</code>.
+    </p>
+    <div class="hero__actions">
+      <a href="#install" class="btn btn--primary">
+        Empezar ahora
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#download" class="btn btn--ghost">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Descargar
+      </a>
+    </div>
+
+    <!-- Terminal animada -->
+    <div class="hero__terminal">
+      <div class="terminal__bar">
+        <span class="dot dot--red"></span>
+        <span class="dot dot--yellow"></span>
+        <span class="dot dot--green"></span>
+        <span class="terminal__title">bash</span>
+      </div>
+      <div class="terminal__body">
+        <div class="terminal__line">
+          <span class="t-prompt">$</span>
+          <span class="t-cmd typing">curl -fsSL https://ass-project.github.io/ass-deploy/install.sh | bash</span>
+        </div>
+        <div class="terminal__output">
+          <span class="t-info">▶ Detectando plataforma: linux/amd64</span><br>
+          <span class="t-info">▶ Descargando ss v0.1.0...</span><br>
+          <span class="t-ok">✓ SS instalado en /usr/local/bin/ass</span>
+        </div>
+        <div class="terminal__line terminal__line--mt">
+          <span class="t-prompt">$</span>
+          <span class="t-cmd">ss init &amp;&amp; ass start</span>
+        </div>
+        <div class="terminal__output">
+          <span class="t-purple">  ███████╗███████╗  ASS v0.1.0</span><br>
+          <span class="t-purple">  ██╔════╝██╔════╝  Server Service</span><br>
+          <span class="t-purple">  ███████╗███████╗</span><br>
+          <span class="t-ok">  → mi-api @ api.ejemplo.com (:8080)</span><br>
+          <span class="t-ok">  → frontend @ ejemplo.com (static)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ STATS ═══════════════════ -->
+<section class="stats">
+  <div class="container stats__grid">
+    <div class="stat">
+      <div class="stat__value">6.5 <span>MB</span></div>
+      <div class="stat__label">Binario completo</div>
+    </div>
+    <div class="stat">
+      <div class="stat__value">&lt;5 <span>MB</span></div>
+      <div class="stat__label">RAM en idle</div>
+    </div>
+    <div class="stat">
+      <div class="stat__value">7 <span>módulos</span></div>
+      <div class="stat__label">Integrados</div>
+    </div>
+    <div class="stat">
+      <div class="stat__value">0 <span>deps</span></div>
+      <div class="stat__label">Runtime externo</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ FEATURES ═══════════════════ -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Módulos</span>
+      <h2>Todo lo que necesitas, integrado</h2>
+      <p>Cada módulo está diseñado para funcionar sin configuración extra. Activa lo que necesitas en <code>ass.toml</code>.</p>
+    </div>
+
+    <div class="features__grid">
+
+      <div class="feature-card feature-card--accent">
+        <div class="feature-card__icon">🔀</div>
+        <h3>Proxy inverso de alto rendimiento</h3>
+        <p>Motor HTTP/1.1 y HTTP/2 nativo con <strong>hyper + tokio</strong>. Enrutamiento por dominio, subdominio y wildcard (<code>*.app.com</code>). Servido de archivos estáticos con soporte SPA.</p>
+        <ul class="feature-list">
+          <li>Enrutamiento por dominio exacto o wildcard</li>
+          <li>Cabeceras X-Forwarded-* automáticas</li>
+          <li>Archivos estáticos con fallback SPA</li>
+          <li>Socket Unix como destino de proxy</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-card__icon">🔐</div>
+        <h3>TLS automático</h3>
+        <p>Cliente ACME integrado. Emite y renueva certificados de <strong>Let's Encrypt</strong> o <strong>ZeroSSL</strong> sin intervención manual. Renovación automática 30 días antes de expirar.</p>
+        <ul class="feature-list">
+          <li>ACME HTTP-01 nativo</li>
+          <li>SNI dinámico multi-dominio</li>
+          <li>Renovación automática</li>
+          <li>Redirect HTTP → HTTPS</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-card__icon">⚙️</div>
+        <h3>Gestión de procesos</h3>
+        <p>Supervisor integrado con reinicio automático ante fallos, límite de reintentos configurable y logs rotativos por app. Equivale a PM2 o Supervisor.</p>
+        <ul class="feature-list">
+          <li>Reinicio automático en fallos</li>
+          <li>Señales stop / restart / reload (SIGHUP)</li>
+          <li>Logs por app con rotación diaria</li>
+          <li>Variables de entorno por proceso</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-card__icon">🔨</div>
+        <h3>Build engine</h3>
+        <p>Git clone/pull automático + ejecución de comandos de build. Detecta cambios en el repositorio y reconstruye + reinicia la app sin intervención humana.</p>
+        <ul class="feature-list">
+          <li>git clone + pull automático</li>
+          <li>Cualquier comando de build</li>
+          <li>Auto-rebuild en nuevos commits</li>
+          <li>Poll interval configurable</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-card__icon">🛡️</div>
+        <h3>Firewall de aplicación</h3>
+        <p>Filtrado de IPs con CIDR, rate limiting por IP, bloqueo de requests sin Host header y límite de tamaño de body. Headers de seguridad automáticos (HSTS, CSP…).</p>
+        <ul class="feature-list">
+          <li>Allowlist / blocklist CIDR</li>
+          <li>Rate limiting por IP (req/seg)</li>
+          <li>Headers de seguridad automáticos</li>
+          <li>Límite de body configurable</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-card__icon">🌐</div>
+        <h3>Túneles NAT bypass</h3>
+        <p>Expón servicios locales detrás de CGNAT o IP dinámica sin ngrok. Conexión WebSocket persistente hacia un servidor relay con reconexión automática.</p>
+        <ul class="feature-list">
+          <li>WebSocket hacia relay propio</li>
+          <li>Reconexión con backoff exponencial</li>
+          <li>Soporte TCP / HTTP / HTTPS</li>
+          <li>Múltiples túneles simultáneos</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-card__icon">🔄</div>
+        <h3>Self-updater</h3>
+        <p>El comando <code>ss update</code> descarga la nueva versión, verifica la firma criptográfica <strong>Ed25519</strong> y reemplaza el ejecutable de forma atómica sin interrumpir los servicios activos.</p>
+        <ul class="feature-list">
+          <li>Verificación Ed25519</li>
+          <li>Reemplazo atómico del binario</li>
+          <li>Backup automático antes de actualizar</li>
+          <li>Soporte multi-canal (stable/beta)</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-card__icon">📄</div>
+        <h3>Config unificada</h3>
+        <p>Un único <code>ass.toml</code> o <code>ass.json</code> declara toda la infraestructura: rutas, apps, TLS, firewall, túneles y logging. Sin archivos dispersos.</p>
+        <ul class="feature-list">
+          <li>TOML o JSON indistintamente</li>
+          <li>Validación al inicio</li>
+          <li><code>ss init</code> genera el archivo de ejemplo</li>
+          <li><code>ss validate</code> sin levantar servicios</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ COMPARATIVA ═══════════════════ -->
+<section class="compare" id="compare">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Comparativa</span>
+      <h2>SS vs. el stack tradicional</h2>
+    </div>
+    <div class="compare__table-wrap">
+      <table class="compare__table">
+        <thead>
+          <tr>
+            <th>Característica</th>
+            <th class="col-ss">SS</th>
+            <th>Caddy</th>
+            <th>Nginx + Certbot</th>
+            <th>PM2 + Nginx</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Binario único</td><td class="col-ss yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>TLS automático</td><td class="col-ss yes">✓</td><td class="yes">✓</td><td class="partial">Con Certbot</td><td class="partial">Con Certbot</td></tr>
+          <tr><td>Gestión de procesos</td><td class="col-ss yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="yes">✓</td></tr>
+          <tr><td>Build engine</td><td class="col-ss yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>Rate limiting</td><td class="col-ss yes">✓</td><td class="partial">Plugins</td><td class="partial">Módulo</td><td class="no">✗</td></tr>
+          <tr><td>Túneles NAT</td><td class="col-ss yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>Self-update</td><td class="col-ss yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="partial">Parcial</td></tr>
+          <tr><td>Config unificada</td><td class="col-ss yes">✓</td><td class="partial">Parcial</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td>RAM en idle</td><td class="col-ss yes">~5 MB</td><td class="partial">~30 MB</td><td class="partial">~20 MB</td><td class="no">~80 MB</td></tr>
+          <tr><td>Tamaño binario</td><td class="col-ss yes">6.5 MB</td><td class="partial">~45 MB</td><td class="no">N/A</td><td class="no">N/A</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ INSTALACIÓN ═══════════════════ -->
+<section class="install" id="install">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Instalación</span>
+      <h2>En marcha en 30 segundos</h2>
+    </div>
+
+    <div class="tabs" id="installTabs">
+      <div class="tabs__nav">
+        <button class="tab-btn active" data-tab="linux">🐧 Linux</button>
+        <button class="tab-btn" data-tab="macos">🍎 macOS</button>
+        <button class="tab-btn" data-tab="windows">🪟 Windows</button>
+        <button class="tab-btn" data-tab="docker">🐳 Docker</button>
+      </div>
+
+      <div class="tab-panel active" id="tab-linux">
+        <div class="code-block">
+          <div class="code-block__header">
+            <span>Instalador automático (recomendado)</span>
+            <button class="copy-btn" data-copy="linux-auto">Copiar</button>
+          </div>
+          <pre id="linux-auto"><code><span class="t-comment"># Detecta plataforma y descarga el paquete correcto</span>
+curl -fsSL https://ass-project.github.io/ass-deploy/install.sh | bash</code></pre>
+        </div>
+
+        <div class="code-block code-block--mt">
+          <div class="code-block__header">
+            <span>Paquete .deb (Debian/Ubuntu)</span>
+            <button class="copy-btn" data-copy="linux-deb">Copiar</button>
+          </div>
+          <pre id="linux-deb"><code>wget https://ass-project.github.io/ass-deploy/packages/ss_0.1.0_amd64.deb
+sudo dpkg -i ss_0.1.0_amd64.deb</code></pre>
+        </div>
+
+        <div class="code-block code-block--mt">
+          <div class="code-block__header">
+            <span>Paquete .rpm (RHEL/Fedora/CentOS)</span>
+            <button class="copy-btn" data-copy="linux-rpm">Copiar</button>
+          </div>
+          <pre id="linux-rpm"><code>wget https://ass-project.github.io/ass-deploy/packages/ss-0.1.0-1.x86_64.rpm
+sudo rpm -i ss-0.1.0-1.x86_64.rpm</code></pre>
+        </div>
+
+        <div class="code-block code-block--mt">
+          <div class="code-block__header">
+            <span>AppImage (portable, auto-actualizable)</span>
+            <button class="copy-btn" data-copy="linux-appimage">Copiar</button>
+          </div>
+          <pre id="linux-appimage"><code>wget https://ass-project.github.io/ass-deploy/packages/SS-0.1.0-x86_64.AppImage
+chmod +x SS-0.1.0-x86_64.AppImage
+./SS-0.1.0-x86_64.AppImage</code></pre>
+        </div>
+
+        <div class="code-block code-block--mt">
+          <div class="code-block__header">
+            <span>Binario directo</span>
+            <button class="copy-btn" data-copy="linux-bin">Copiar</button>
+          </div>
+          <pre id="linux-bin"><code>wget https://ass-project.github.io/ass-deploy/packages/ss-linux-amd64.bin
+chmod +x ss-linux-amd64.bin
+sudo mv ss-linux-amd64.bin /usr/local/bin/ass</code></pre>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tab-macos">
+        <div class="code-block">
+          <div class="code-block__header">
+            <span>Instalador automático</span>
+            <button class="copy-btn" data-copy="mac-auto">Copiar</button>
+          </div>
+          <pre id="mac-auto"><code>curl -fsSL https://ass-project.github.io/ass-deploy/install.sh | bash</code></pre>
+        </div>
+        <div class="code-block code-block--mt">
+          <div class="code-block__header">
+            <span>Binario directo (Apple Silicon)</span>
+            <button class="copy-btn" data-copy="mac-arm">Copiar</button>
+          </div>
+          <pre id="mac-arm"><code>curl -L https://ass-project.github.io/ass-deploy/packages/ss-darwin-arm64.bin -o ss
+chmod +x ss && sudo mv ss /usr/local/bin/</code></pre>
+        </div>
+        <div class="code-block code-block--mt">
+          <div class="code-block__header">
+            <span>Binario directo (Intel)</span>
+            <button class="copy-btn" data-copy="mac-x64">Copiar</button>
+          </div>
+          <pre id="mac-x64"><code>curl -L https://ass-project.github.io/ass-deploy/packages/ss-darwin-amd64.bin -o ss
+chmod +x ss && sudo mv ss /usr/local/bin/</code></pre>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tab-windows">
+        <div class="code-block">
+          <div class="code-block__header">
+            <span>PowerShell (recomendado)</span>
+            <button class="copy-btn" data-copy="win-ps">Copiar</button>
+          </div>
+          <pre id="win-ps"><code>irm https://ass-project.github.io/ass-deploy/install.ps1 | iex</code></pre>
+        </div>
+        <div class="code-block code-block--mt">
+          <div class="code-block__header">
+            <span>Descarga directa .exe</span>
+            <button class="copy-btn" data-copy="win-exe">Copiar</button>
+          </div>
+          <pre id="win-exe"><code><span class="t-comment"># Descargar ss.exe desde:</span>
+https://ass-project.github.io/ass-deploy/packages/ss-windows-amd64.exe
+
+<span class="t-comment"># Añadir al PATH y ejecutar:</span>
+ss.exe init
+ss.exe start</code></pre>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tab-docker">
+        <div class="code-block">
+          <div class="code-block__header">
+            <span>Docker (imagen scratch, minimal)</span>
+            <button class="copy-btn" data-copy="docker-run">Copiar</button>
+          </div>
+          <pre id="docker-run"><code>docker run -d \
+  --name ss \
+  -p 80:80 -p 443:443 \
+  -v $(pwd)/ass.toml:/etc/ass/ass.toml \
+  -v ss-certs:/etc/ass/certs \
+  ghcr.io/ass-project/ass:latest</code></pre>
+        </div>
+        <div class="code-block code-block--mt">
+          <div class="code-block__header">
+            <span>docker-compose.yml</span>
+            <button class="copy-btn" data-copy="docker-compose">Copiar</button>
+          </div>
+          <pre id="docker-compose"><code>services:
+  ss:
+    image: ghcr.io/ass-project/ass:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./ass.toml:/etc/ass/ass.toml
+      - ss-certs:/etc/ass/certs
+    restart: unless-stopped
+
+volumes:
+  ss-certs:</code></pre>
+        </div>
+      </div>
+
+    </div><!-- /tabs -->
+  </div>
+</section>
+
+<!-- ═══════════════════ CONFIG EJEMPLO ═══════════════════ -->
+<section class="config-section" id="config">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Configuración</span>
+      <h2>Un archivo, toda la infraestructura</h2>
+      <p>Genera el archivo de ejemplo con <code>ss init</code> y personalízalo.</p>
+    </div>
+
+    <div class="config-split">
+      <div class="config-split__code">
+        <div class="code-block">
+          <div class="code-block__header">
+            <span>ass.toml</span>
+            <button class="copy-btn" data-copy="config-example">Copiar</button>
+          </div>
+          <pre id="config-example"><code><span class="t-comment"># ─── Servidor ────────────────────────────</span>
+[server]
+host = <span class="t-str">"0.0.0.0"</span>
+http_port = <span class="t-num">80</span>
+https_port = <span class="t-num">443</span>
+ssl_email = <span class="t-str">"admin@ejemplo.com"</span>
+force_https = <span class="t-bool">true</span>
+
+<span class="t-comment"># ─── App backend ─────────────────────────</span>
+[[app]]
+name = <span class="t-str">"mi-api"</span>
+domain = <span class="t-str">"api.ejemplo.com"</span>
+repo = <span class="t-str">"https://github.com/usuario/mi-api"</span>
+build = <span class="t-str">"go build -o app ./cmd"</span>
+exec = <span class="t-str">"./app"</span>
+port = <span class="t-num">8080</span>
+auto_update = <span class="t-bool">true</span>
+security_headers = <span class="t-bool">true</span>
+
+[app.env]
+DATABASE_URL = <span class="t-str">"postgres://localhost/mydb"</span>
+APP_ENV = <span class="t-str">"production"</span>
+
+<span class="t-comment"># ─── Frontend estático ───────────────────</span>
+[[app]]
+name = <span class="t-str">"frontend"</span>
+domain = <span class="t-str">"ejemplo.com"</span>
+domains = [<span class="t-str">"www.ejemplo.com"</span>]
+
+[[app.static_routes]]
+prefix = <span class="t-str">"/"</span>
+dir = <span class="t-str">"/var/www/dist"</span>
+compress = <span class="t-bool">true</span>
+
+<span class="t-comment"># ─── Firewall ────────────────────────────</span>
+[firewall]
+enabled = <span class="t-bool">true</span>
+rate_limit_rps = <span class="t-num">100</span>
+allowlist = [<span class="t-str">"10.0.0.0/8"</span>]
+
+<span class="t-comment"># ─── Túnel opcional ──────────────────────</span>
+[tunnel]
+enabled = <span class="t-bool">false</span>
+relay_server = <span class="t-str">"relay.ejemplo.com:7000"</span></code></pre>
+        </div>
+      </div>
+
+      <div class="config-split__steps">
+        <div class="step">
+          <div class="step__num">1</div>
+          <div class="step__content">
+            <h4>Genera la configuración</h4>
+            <p>Ejecuta <code>ss init</code> para crear un <code>ass.toml</code> de ejemplo con todos los campos documentados.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step__num">2</div>
+          <div class="step__content">
+            <h4>Define tus apps</h4>
+            <p>Cada bloque <code>[[app]]</code> declara un servicio: dominio, comando de build, proceso a supervisar y puerto.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step__num">3</div>
+          <div class="step__content">
+            <h4>Valida antes de arrancar</h4>
+            <p>Usa <code>ss validate</code> para detectar errores de configuración sin levantar ningún servicio.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step__num">4</div>
+          <div class="step__content">
+            <h4>Arranca todo</h4>
+            <p><code>ss start</code> provisiona certificados TLS, compila tus apps y activa el proxy. Todo en un comando.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ DOWNLOAD ═══════════════════ -->
+<section class="download" id="download">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Descargas</span>
+      <h2>Elige tu plataforma</h2>
+      <p>Todos los paquetes están firmados con Ed25519. Verifica con <code>ss verify &lt;archivo&gt;</code>.</p>
+    </div>
+
+    <div class="download__grid">
+
+      <div class="pkg-card">
+        <div class="pkg-card__icon">🐧</div>
+        <div class="pkg-card__info">
+          <h4>.deb</h4>
+          <span class="pkg-card__sub">Debian · Ubuntu · Mint</span>
+        </div>
+        <div class="pkg-card__meta">
+          <span class="pkg-card__size">~3.1 MB</span>
+          <span class="pkg-card__arch">amd64 / arm64</span>
+        </div>
+        <div class="pkg-card__actions">
+          <a href="packages/ss_0.1.0_amd64.deb" class="btn btn--small btn--primary">amd64</a>
+          <a href="packages/ss_0.1.0_arm64.deb" class="btn btn--small btn--ghost">arm64</a>
+        </div>
+      </div>
+
+      <div class="pkg-card">
+        <div class="pkg-card__icon">🎩</div>
+        <div class="pkg-card__info">
+          <h4>.rpm</h4>
+          <span class="pkg-card__sub">RHEL · Fedora · CentOS · SUSE</span>
+        </div>
+        <div class="pkg-card__meta">
+          <span class="pkg-card__size">~3.2 MB</span>
+          <span class="pkg-card__arch">x86_64 / aarch64</span>
+        </div>
+        <div class="pkg-card__actions">
+          <a href="packages/ss-0.1.0-1.x86_64.rpm" class="btn btn--small btn--primary">x86_64</a>
+          <a href="packages/ss-0.1.0-1.aarch64.rpm" class="btn btn--small btn--ghost">aarch64</a>
+        </div>
+      </div>
+
+      <div class="pkg-card">
+        <div class="pkg-card__icon">📦</div>
+        <div class="pkg-card__info">
+          <h4>AppImage</h4>
+          <span class="pkg-card__sub">Cualquier distro Linux · Auto-update</span>
+        </div>
+        <div class="pkg-card__meta">
+          <span class="pkg-card__size">~7.2 MB</span>
+          <span class="pkg-card__arch">x86_64</span>
+        </div>
+        <div class="pkg-card__actions">
+          <a href="packages/SS-0.1.0-x86_64.AppImage" class="btn btn--small btn--primary">Descargar</a>
+        </div>
+      </div>
+
+      <div class="pkg-card">
+        <div class="pkg-card__icon">🪟</div>
+        <div class="pkg-card__info">
+          <h4>.exe</h4>
+          <span class="pkg-card__sub">Windows 10/11</span>
+        </div>
+        <div class="pkg-card__meta">
+          <span class="pkg-card__size">~7.8 MB</span>
+          <span class="pkg-card__arch">x86_64</span>
+        </div>
+        <div class="pkg-card__actions">
+          <a href="packages/ss-windows-amd64.exe" class="btn btn--small btn--primary">Descargar</a>
+        </div>
+      </div>
+
+      <div class="pkg-card">
+        <div class="pkg-card__icon">⚙️</div>
+        <div class="pkg-card__info">
+          <h4>Binario .bin</h4>
+          <span class="pkg-card__sub">Linux / macOS · portable</span>
+        </div>
+        <div class="pkg-card__meta">
+          <span class="pkg-card__size">~6.5 MB</span>
+          <span class="pkg-card__arch">amd64 / arm64 / darwin</span>
+        </div>
+        <div class="pkg-card__actions">
+          <a href="packages/ss-linux-amd64.bin" class="btn btn--small btn--primary">linux</a>
+          <a href="packages/ss-darwin-arm64.bin" class="btn btn--small btn--ghost">macOS</a>
+        </div>
+      </div>
+
+      <div class="pkg-card pkg-card--source">
+        <div class="pkg-card__icon">🦀</div>
+        <div class="pkg-card__info">
+          <h4>Código fuente</h4>
+          <span class="pkg-card__sub">Rust 1.75+ · MIT License</span>
+        </div>
+        <div class="pkg-card__meta">
+          <span class="pkg-card__size">cargo build --release</span>
+        </div>
+        <div class="pkg-card__actions">
+          <a href="https://github.com/ass-project/ass-src" target="_blank" class="btn btn--small btn--ghost">GitHub →</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Checksums -->
+    <div class="checksums">
+      <details>
+        <summary>Checksums SHA-256</summary>
+        <div class="code-block code-block--mt">
+          <pre><code id="checksums-text">Cargando checksums...</code></pre>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ SYSTEMD ═══════════════════ -->
+<section class="systemd-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Producción</span>
+      <h2>Como servicio del sistema</h2>
+    </div>
+    <div class="two-cols">
+      <div class="code-block">
+        <div class="code-block__header">
+          <span>systemd (Linux)</span>
+          <button class="copy-btn" data-copy="systemd-unit">Copiar</button>
+        </div>
+        <pre id="systemd-unit"><code><span class="t-comment"># /etc/systemd/system/ass.service</span>
+[Unit]
+Description=AASS - App Service Server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/ass start --foreground
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+User=root
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+      </div>
+      <div class="systemd-steps">
+        <div class="code-block">
+          <div class="code-block__header"><span>Activar servicio</span><button class="copy-btn" data-copy="systemd-cmds">Copiar</button></div>
+          <pre id="systemd-cmds"><code><span class="t-comment"># Instalar y activar</span>
+sudo systemctl daemon-reload
+sudo systemctl enable --now ss
+
+<span class="t-comment"># Verificar estado</span>
+systemctl status ss
+
+<span class="t-comment"># Ver logs en tiempo real</span>
+journalctl -u ss -f
+
+<span class="t-comment"># Recargar config sin reiniciar</span>
+systemctl reload ss</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <span class="logo-icon">⚡</span>
+      <span class="logo-text">SS</span>
+      <span class="footer__version">v0.1.0</span>
+    </div>
+    <div class="footer__links">
+      <a href="https://github.com/ass-project/ass-src" target="_blank">Código fuente</a>
+      <a href="https://github.com/ass-project/ass-src/issues" target="_blank">Issues</a>
+      <a href="https://github.com/ass-project/ass-src/blob/main/LICENSE" target="_blank">MIT License</a>
+      <a href="https://github.com/ass-project/ass-src/releases" target="_blank">Releases</a>
+    </div>
+    <div class="footer__copy">
+      Construido con ❤️ y 🦀 Rust
+    </div>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
