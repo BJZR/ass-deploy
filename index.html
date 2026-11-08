@@ -1205,7 +1205,7 @@ tail -f /var/log/upstart/ass.log</code></pre>
       <div class="init-grid">
         <div class="code-block">
           <div class="code-block__hdr">
-            <span>~/Library/LaunchAgents/dev.ass-project.ass.plist</span>
+            <span>~/Library/LaunchAgents/dev.BJZR.ass.plist</span>
             <button class="copy-btn" data-copy="c-launchd-plist">Copiar</button>
           </div>
           <pre><code id="c-launchd-plist">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
@@ -1214,7 +1214,7 @@ tail -f /var/log/upstart/ass.log</code></pre>
 &lt;plist version="1.0"&gt;
 &lt;dict&gt;
   &lt;key&gt;Label&lt;/key&gt;
-  &lt;string&gt;dev.ass-project.ass&lt;/string&gt;
+  &lt;string&gt;dev.BJZR.ass&lt;/string&gt;
 
   &lt;key&gt;ProgramArguments&lt;/key&gt;
   &lt;array&gt;
@@ -1250,21 +1250,21 @@ tail -f /var/log/upstart/ass.log</code></pre>
 sudo mkdir -p /var/log/ass
 
 # Cargar el agente (inicio automático al login)
-launchctl load ~/Library/LaunchAgents/dev.ass-project.ass.plist
+launchctl load ~/Library/LaunchAgents/dev.BJZR.ass.plist
 
 # Para servicio del sistema (todos los usuarios):
-# sudo cp dev.ass-project.ass.plist /Library/LaunchDaemons/
-# sudo launchctl load /Library/LaunchDaemons/dev.ass-project.ass.plist
+# sudo cp dev.BJZR.ass.plist /Library/LaunchDaemons/
+# sudo launchctl load /Library/LaunchDaemons/dev.BJZR.ass.plist
 
 # Iniciar / detener manualmente
-launchctl start dev.ass-project.ass
-launchctl stop  dev.ass-project.ass
+launchctl start dev.BJZR.ass
+launchctl stop  dev.BJZR.ass
 
 # Ver estado
 launchctl list | grep ass
 
 # Descargar (desactivar al arranque)
-launchctl unload ~/Library/LaunchAgents/dev.ass-project.ass.plist</code></pre>
+launchctl unload ~/Library/LaunchAgents/dev.BJZR.ass.plist</code></pre>
         </div>
       </div>
       <p class="init-note">ℹ️ En macOS usa <code>LaunchAgents</code> para servicios de usuario o <code>LaunchDaemons</code> para servicios del sistema (requiere sudo). El binario debe estar en <strong>/usr/local/bin/ass</strong>.</p>
