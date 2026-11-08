@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════
 #  ASS — Instalador automático
-#  curl -fsSL https://ass-project.github.io/ass-deploy/install.sh | bash
+#  curl -fsSL https://BJZR.github.io/ass-deploy/install.sh | bash
 # ═══════════════════════════════════════════════════════════════
 set -euo pipefail
 
-BASE_URL="https://ass-project.github.io/ass-deploy/packages"
+BASE_URL="https://BJZR.github.io/ass-deploy/packages"
 INSTALL_DIR="/usr/local/bin"
 BIN_NAME="ass"
 
@@ -105,5 +105,5 @@ echo -e "  ${BOLD}ss validate${RESET}    — Valida la configuración"
 echo -e "  ${BOLD}ss start${RESET}       — Inicia todos los servicios"
 echo -e "  ${BOLD}ss info${RESET}        — Información del sistema"
 echo ""
-echo "  Documentación: https://ass-project.github.io/ass-deploy/"
+echo "  Documentación: https://BJZR.github.io/ass-deploy/"
 echo ""

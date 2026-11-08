@@ -1,10 +1,10 @@
 # ═══════════════════════════════════════════════════════════════
 #  ASS — Instalador para Windows (PowerShell)
-#  irm https://ass-project.github.io/ass-deploy/install.ps1 | iex
+#  irm https://BJZR.github.io/ass-deploy/install.ps1 | iex
 # ═══════════════════════════════════════════════════════════════
 $ErrorActionPreference = "Stop"
 
-$BaseUrl    = "https://ass-project.github.io/ass-deploy/packages"
+$BaseUrl    = "https://BJZR.github.io/ass-deploy/packages"
 $InstallDir = "$env:LOCALAPPDATA\Programs\ss"
 $BinName    = "ss.exe"
 
@@ -71,5 +71,5 @@ Write-Host "  ass validate    — Valida la configuración" -ForegroundColor Whi
 Write-Host "  ass start       — Inicia todos los servicios" -ForegroundColor White
 Write-Host ""
 Write-Host "  Nota: Abre una nueva terminal para usar ss desde cualquier directorio."
-Write-Host "  Documentación: https://ass-project.github.io/ass-deploy/"
+Write-Host "  Documentación: https://BJZR.github.io/ass-deploy/"
 Write-Host ""
