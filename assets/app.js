@@ -44,28 +44,35 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ── Tabs ──────────────────────────────────────────
+  // Tabs de instalación
   document.querySelectorAll('.tabs').forEach(tabsEl => {
-    const btns   = tabsEl.querySelectorAll('.tab-btn');
-    const panels = tabsEl.querySelectorAll('.tab-panel');
-
-    btns.forEach(btn => {
+    tabsEl.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const target = btn.dataset.tab;
-
-        btns.forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-selected', 'false');
-        });
-        panels.forEach(p => p.classList.remove('active'));
-
-        btn.classList.add('active');
-        btn.setAttribute('aria-selected', 'true');
-
-        const panel = tabsEl.querySelector(`#tab-${target}`);
+        tabsEl.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+        tabsEl.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active'); btn.setAttribute('aria-selected','true');
+        const panel = tabsEl.querySelector('#tab-' + target);
         if (panel) panel.classList.add('active');
       });
     });
   });
+
+  // Tabs de init systems
+  const initNav = document.getElementById('initNav');
+  if (initNav) {
+    const initScope = initNav.parentElement;
+    initNav.querySelectorAll('.init-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.init;
+        initNav.querySelectorAll('.init-tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+        initScope.querySelectorAll('.init-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active'); btn.setAttribute('aria-selected','true');
+        const panel = initScope.querySelector('#init-' + target);
+        if (panel) panel.classList.add('active');
+      });
+    });
+  }
 
   // ── Detectar plataforma y seleccionar tab ─────────
   const ua = (navigator.userAgent + navigator.platform).toLowerCase();

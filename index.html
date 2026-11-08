@@ -888,17 +888,33 @@ relay_server = <span class="s-str">"relay.ejemplo.com:7000"</span></code></pre>
 </section>
 
 <!-- ════════════════════ SYSTEMD ════════════════════ -->
-<section class="systemd-sec section">
+<section class="init-sec section">
   <div class="container">
     <div class="section-head">
       <span class="section-pill">Producción</span>
       <h2>Como servicio del sistema</h2>
-      <p>ASS funciona con systemd sin configuración extra. La unidad se instala automáticamente con los paquetes .deb y .rpm.</p>
+      <p>ASS se integra con cualquier sistema de init. Los paquetes <code>.deb</code> y <code>.rpm</code> instalan la unidad automáticamente.</p>
     </div>
-    <div class="two-col">
-      <div class="code-block">
-        <div class="code-block__hdr"><span>/etc/systemd/system/ass.service</span><button class="copy-btn" data-copy="c-systemd">Copiar</button></div>
-        <pre><code id="c-systemd">[Unit]
+
+    <!-- Tabs de init systems -->
+    <div class="init-tabs__nav" role="tablist" id="initNav">
+      <button class="init-tab-btn active" data-init="systemd"  role="tab" aria-selected="true">systemd</button>
+      <button class="init-tab-btn"         data-init="runit"    role="tab" aria-selected="false">runit</button>
+      <button class="init-tab-btn"         data-init="openrc"   role="tab" aria-selected="false">OpenRC</button>
+      <button class="init-tab-btn"         data-init="s6"       role="tab" aria-selected="false">s6</button>
+      <button class="init-tab-btn"         data-init="upstart"  role="tab" aria-selected="false">Upstart</button>
+      <button class="init-tab-btn"         data-init="launchd"  role="tab" aria-selected="false">launchd</button>
+    </div>
+
+    <!-- ── systemd ── -->
+    <div class="init-panel active" id="init-systemd" role="tabpanel">
+      <div class="init-grid">
+        <div class="code-block">
+          <div class="code-block__hdr">
+            <span>/etc/systemd/system/ass.service</span>
+            <button class="copy-btn" data-copy="c-systemd">Copiar</button>
+          </div>
+          <pre><code id="c-systemd">[Unit]
 Description=ASS - App Service Server
 Documentation=https://tu-usuario.github.io/ass-deploy/
 After=network-online.target
@@ -916,26 +932,344 @@ StandardError=journal
 
 [Install]
 WantedBy=multi-user.target</code></pre>
-      </div>
-      <div class="code-block">
-        <div class="code-block__hdr"><span>Activar y gestionar</span><button class="copy-btn" data-copy="c-systemd-cmds">Copiar</button></div>
-        <pre><code id="c-systemd-cmds"># Instalar y activar al arranque
+        </div>
+        <div class="code-block">
+          <div class="code-block__hdr">
+            <span>Gestión del servicio</span>
+            <button class="copy-btn" data-copy="c-systemd-cmds">Copiar</button>
+          </div>
+          <pre><code id="c-systemd-cmds"># Activar y arrancar al inicio
 sudo systemctl daemon-reload
 sudo systemctl enable --now ass
 
-# Ver estado
+# Estado
 systemctl status ass
 
 # Logs en tiempo real
 journalctl -u ass -f
 
-# Recargar configuración sin reiniciar
+# Recargar config sin reiniciar
 systemctl reload ass
 
 # Ver logs de una app concreta
 ass logs mi-api</code></pre>
+        </div>
       </div>
+      <p class="init-note">✓ La unidad systemd se instala automáticamente al usar los paquetes <strong>.deb</strong> o <strong>.rpm</strong>.</p>
     </div>
+
+    <!-- ── runit ── -->
+    <div class="init-panel" id="init-runit" role="tabpanel">
+      <div class="init-grid">
+        <div class="code-block">
+          <div class="code-block__hdr">
+            <span>/etc/sv/ass/run</span>
+            <button class="copy-btn" data-copy="c-runit-run">Copiar</button>
+          </div>
+          <pre><code id="c-runit-run">#!/bin/sh
+# Servicio runit para ASS
+# Distros: Void Linux, Artix (runit), Devuan
+
+# Crear directorio de logs si no existe
+mkdir -p /var/log/ass
+
+exec /usr/local/bin/ass start --foreground \
+  -c /etc/ass/ass.toml 2>&1</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-block__hdr">
+            <span>/etc/sv/ass/log/run</span>
+            <button class="copy-btn" data-copy="c-runit-log">Copiar</button>
+          </div>
+          <pre><code id="c-runit-log">#!/bin/sh
+# Logger para runit (svlogd)
+mkdir -p /var/log/ass
+exec svlogd -tt /var/log/ass</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-block__hdr">
+            <span>Activar el servicio</span>
+            <button class="copy-btn" data-copy="c-runit-cmds">Copiar</button>
+          </div>
+          <pre><code id="c-runit-cmds"># Dar permisos de ejecución
+chmod +x /etc/sv/ass/run
+chmod +x /etc/sv/ass/log/run
+
+# Enlazar para activar al arranque
+ln -s /etc/sv/ass /var/service/ass
+
+# Gestión manual
+sv up ass       # iniciar
+sv down ass     # detener
+sv restart ass  # reiniciar
+sv status ass   # estado</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-block__hdr">
+            <span>Recargar configuración</span>
+            <button class="copy-btn" data-copy="c-runit-reload">Copiar</button>
+          </div>
+          <pre><code id="c-runit-reload"># Enviar SIGHUP para reload graceful
+kill -HUP $(cat /var/service/ass/supervise/pid)
+
+# O usando ass directamente
+ass reload</code></pre>
+        </div>
+      </div>
+      <p class="init-note">ℹ️ runit es el init de <strong>Void Linux</strong> y <strong>Artix (runit)</strong>. Crea <code>/etc/sv/ass/</code> con los archivos <code>run</code> y <code>log/run</code> antes de activar.</p>
+    </div>
+
+    <!-- ── OpenRC ── -->
+    <div class="init-panel" id="init-openrc" role="tabpanel">
+      <div class="init-grid">
+        <div class="code-block">
+          <div class="code-block__hdr">
+            <span>/etc/init.d/ass</span>
+            <button class="copy-btn" data-copy="c-openrc-init">Copiar</button>
+          </div>
+          <pre><code id="c-openrc-init">#!/sbin/openrc-run
+# Servicio OpenRC para ASS
+# Distros: Alpine Linux, Artix (OpenRC), Gentoo
+
+name="ass"
+description="ASS - App Service Server"
+command="/usr/local/bin/ass"
+command_args="start --foreground -c /etc/ass/ass.toml"
+command_background=true
+pidfile="/run/ass.pid"
+output_log="/var/log/ass/stdout.log"
+error_log="/var/log/ass/stderr.log"
+
+depend() {
+    need net
+    after logger
+}
+
+start_pre() {
+    mkdir -p /var/log/ass /etc/ass/certs /var/lib/ass
+    checkpath --directory --owner root:root --mode 0750 /etc/ass/certs
+}</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-block__hdr">
+            <span>Activar el servicio</span>
+            <button class="copy-btn" data-copy="c-openrc-cmds">Copiar</button>
+          </div>
+          <pre><code id="c-openrc-cmds"># Dar permisos de ejecución
+chmod +x /etc/init.d/ass
+
+# Añadir al nivel de arranque default
+rc-update add ass default
+
+# Gestión
+rc-service ass start    # iniciar
+rc-service ass stop     # detener
+rc-service ass restart  # reiniciar
+rc-service ass status   # estado
+
+# Recargar configuración
+rc-service ass reload   # envía SIGHUP</code></pre>
+        </div>
+      </div>
+      <p class="init-note">✓ OpenRC es el init por defecto en <strong>Alpine Linux</strong> y <strong>Gentoo</strong>. El script usa <code>command_background=true</code> para que OpenRC gestione el PID automáticamente.</p>
+    </div>
+
+    <!-- ── s6 ── -->
+    <div class="init-panel" id="init-s6" role="tabpanel">
+      <div class="init-grid">
+        <div class="code-block">
+          <div class="code-block__hdr">
+            <span>/etc/s6/sv/ass/run</span>
+            <button class="copy-btn" data-copy="c-s6-run">Copiar</button>
+          </div>
+          <pre><code id="c-s6-run">#!/command/execlineb -P
+# Servicio s6 para ASS
+# Distros: Artix (s6), Chimera Linux, s6-overlay (Docker)
+
+# Definir variables de entorno
+importas -u HOME HOME
+importas -u PATH PATH
+
+# Ejecutar ASS en primer plano (s6 gestiona el proceso)
+exec /usr/local/bin/ass start --foreground -c /etc/ass/ass.toml</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-block__hdr">
+            <span>/etc/s6/sv/ass/log/run</span>
+            <button class="copy-btn" data-copy="c-s6-log">Copiar</button>
+          </div>
+          <pre><code id="c-s6-log">#!/command/execlineb -P
+# Logger s6 con s6-log
+exec s6-log -d3 T /var/log/ass</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-block__hdr">
+            <span>/etc/s6/sv/ass/finish</span>
+            <button class="copy-btn" data-copy="c-s6-finish">Copiar</button>
+          </div>
+          <pre><code id="c-s6-finish">#!/bin/sh
+# Se ejecuta cuando el proceso termina
+# $1 = exit code, $2 = signal number
+echo "ass terminó con código $1 (señal $2)" \
+  >> /var/log/ass/finish.log</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-block__hdr">
+            <span>Activar y gestionar</span>
+            <button class="copy-btn" data-copy="c-s6-cmds">Copiar</button>
+          </div>
+          <pre><code id="c-s6-cmds"># Dar permisos
+chmod +x /etc/s6/sv/ass/run
+chmod +x /etc/s6/sv/ass/log/run
+
+# Activar el servicio
+s6-rc-bundle-update add default ass
+
+# O enlazar directamente (s6-svscan)
+ln -s /etc/s6/sv/ass /run/s6/service/ass
+
+# Gestión con s6-rc
+s6-rc -u change ass   # iniciar
+s6-rc -d change ass   # detener
+s6-svc -h /run/s6/service/ass  # SIGHUP (reload)</code></pre>
+        </div>
+      </div>
+      <p class="init-note">ℹ️ s6 es el init de <strong>Chimera Linux</strong> y se usa en contenedores con <strong>s6-overlay</strong>. Todos los scripts deben ser ejecutables. s6 nunca bifurca — ASS debe correr en primer plano (<code>--foreground</code>).</p>
+    </div>
+
+    <!-- ── Upstart ── -->
+    <div class="init-panel" id="init-upstart" role="tabpanel">
+      <div class="init-grid">
+        <div class="code-block">
+          <div class="code-block__hdr">
+            <span>/etc/init/ass.conf</span>
+            <button class="copy-btn" data-copy="c-upstart-conf">Copiar</button>
+          </div>
+          <pre><code id="c-upstart-conf"># Servicio Upstart para ASS
+# Distros: Ubuntu (≤14.04), algunas versiones de RHEL 6
+
+description "ASS - App Service Server"
+author      "ASS Project"
+
+start on (local-filesystems and net-device-up IFACE!=lo)
+stop on shutdown
+
+respawn
+respawn limit 10 5
+
+setuid root
+setgid root
+
+env HOME=/root
+env PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+pre-start script
+    mkdir -p /var/log/ass /var/lib/ass /etc/ass/certs
+end script
+
+exec /usr/local/bin/ass start --foreground -c /etc/ass/ass.toml
+
+post-stop script
+    echo "ass detenido en $(date)" >> /var/log/ass/upstart.log
+end script</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-block__hdr">
+            <span>Gestión del servicio</span>
+            <button class="copy-btn" data-copy="c-upstart-cmds">Copiar</button>
+          </div>
+          <pre><code id="c-upstart-cmds"># Iniciar
+sudo start ass
+
+# Detener
+sudo stop ass
+
+# Reiniciar
+sudo restart ass
+
+# Estado
+sudo status ass
+
+# Recargar (SIGHUP)
+sudo reload ass
+
+# Ver logs
+tail -f /var/log/upstart/ass.log</code></pre>
+        </div>
+      </div>
+      <p class="init-note">⚠️ Upstart está en desuso. Se usa principalmente en <strong>Ubuntu 14.04 LTS</strong> y sistemas legacy. Para instalaciones nuevas, prefiere systemd u OpenRC.</p>
+    </div>
+
+    <!-- ── launchd (macOS) ── -->
+    <div class="init-panel" id="init-launchd" role="tabpanel">
+      <div class="init-grid">
+        <div class="code-block">
+          <div class="code-block__hdr">
+            <span>~/Library/LaunchAgents/dev.ass-project.ass.plist</span>
+            <button class="copy-btn" data-copy="c-launchd-plist">Copiar</button>
+          </div>
+          <pre><code id="c-launchd-plist">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+  &lt;key&gt;Label&lt;/key&gt;
+  &lt;string&gt;dev.ass-project.ass&lt;/string&gt;
+
+  &lt;key&gt;ProgramArguments&lt;/key&gt;
+  &lt;array&gt;
+    &lt;string&gt;/usr/local/bin/ass&lt;/string&gt;
+    &lt;string&gt;start&lt;/string&gt;
+    &lt;string&gt;--foreground&lt;/string&gt;
+    &lt;string&gt;-c&lt;/string&gt;
+    &lt;string&gt;/etc/ass/ass.toml&lt;/string&gt;
+  &lt;/array&gt;
+
+  &lt;key&gt;RunAtLoad&lt;/key&gt;    &lt;true/&gt;
+  &lt;key&gt;KeepAlive&lt;/key&gt;   &lt;true/&gt;
+
+  &lt;key&gt;StandardOutPath&lt;/key&gt;
+  &lt;string&gt;/var/log/ass/stdout.log&lt;/string&gt;
+  &lt;key&gt;StandardErrorPath&lt;/key&gt;
+  &lt;string&gt;/var/log/ass/stderr.log&lt;/string&gt;
+
+  &lt;key&gt;EnvironmentVariables&lt;/key&gt;
+  &lt;dict&gt;
+    &lt;key&gt;PATH&lt;/key&gt;
+    &lt;string&gt;/usr/local/bin:/usr/bin:/bin&lt;/string&gt;
+  &lt;/dict&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-block__hdr">
+            <span>Cargar y gestionar</span>
+            <button class="copy-btn" data-copy="c-launchd-cmds">Copiar</button>
+          </div>
+          <pre><code id="c-launchd-cmds"># Crear directorio de logs
+sudo mkdir -p /var/log/ass
+
+# Cargar el agente (inicio automático al login)
+launchctl load ~/Library/LaunchAgents/dev.ass-project.ass.plist
+
+# Para servicio del sistema (todos los usuarios):
+# sudo cp dev.ass-project.ass.plist /Library/LaunchDaemons/
+# sudo launchctl load /Library/LaunchDaemons/dev.ass-project.ass.plist
+
+# Iniciar / detener manualmente
+launchctl start dev.ass-project.ass
+launchctl stop  dev.ass-project.ass
+
+# Ver estado
+launchctl list | grep ass
+
+# Descargar (desactivar al arranque)
+launchctl unload ~/Library/LaunchAgents/dev.ass-project.ass.plist</code></pre>
+        </div>
+      </div>
+      <p class="init-note">ℹ️ En macOS usa <code>LaunchAgents</code> para servicios de usuario o <code>LaunchDaemons</code> para servicios del sistema (requiere sudo). El binario debe estar en <strong>/usr/local/bin/ass</strong>.</p>
+    </div>
+
   </div>
 </section>
 

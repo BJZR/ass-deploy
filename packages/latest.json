@@ -1,0 +1,15 @@
+{
+  "version": "0.1.0",
+  "date": "2026-11-08T19:29:18Z",
+  "packages": {
+    "linux-amd64-bin":      "ass-linux-amd64.bin",
+    "linux-arm64-bin":      "ass-linux-arm64.bin",
+    "linux-amd64-deb":      "ass_0.1.0_amd64.deb",
+    "linux-arm64-deb":      "ass_0.1.0_arm64.deb",
+    "linux-amd64-rpm":      "ass-0.1.0-1.x86_64.rpm",
+    "linux-amd64-appimage": "ASS-0.1.0-x86_64.AppImage",
+    "darwin-amd64-bin":     "ass-darwin-amd64.bin",
+    "darwin-arm64-bin":     "ass-darwin-arm64.bin",
+    "windows-amd64-exe":    "ass-windows-amd64.exe"
+  }
+}
