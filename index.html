@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ASS — Server Service | El servidor todo-en-uno en Rust</title>
-  <meta name="description" content="ASS reemplaza Nginx, Certbot, PM2 y ngrok con un único binario ultraligero escrito en Rust. Proxy inverso, TLS automático, gestión de procesos y túneles en un solo archivo de configuración." />
-  <meta property="og:title" content="ASS — Server Service" />
+  <title>ASS — App Service Server | El servidor todo-en-uno en Rust</title>
+  <meta name="description" content="ASS reemplaza Nginx, Certbot, PM2 y ngrok con un único binario ultraligero escrito en Rust. Proxy inverso, TLS automático, gestión de procesos y túneles en un solo archivo ass.toml." />
+  <meta property="og:title" content="ASS — App Service Server" />
   <meta property="og:description" content="Un binario. Cero dependencias. Todo tu servidor." />
   <meta property="og:type" content="website" />
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
@@ -16,408 +16,604 @@
 </head>
 <body>
 
-<!-- ═══════════════════ NAV ═══════════════════ -->
+<!-- ════════════════════ NAV ════════════════════ -->
 <nav class="nav" id="nav">
   <div class="nav__inner">
+
     <a href="#" class="nav__logo">
-      <span class="logo-icon">⚡</span>
-      <span class="logo-text">SS</span>
+      <!-- Logo ASS hecho a mano -->
+      <svg class="logo-mark" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="8" fill="url(#logo-bg)"/>
+        <path d="M7 22L11.5 10H13.5L18 22H16.2L15.1 19H9.9L8.8 22H7ZM10.5 17.5H14.5L12.5 12L10.5 17.5Z" fill="white"/>
+        <path d="M19.2 20.3C19.2 20.3 20.4 21.2 22 21.2C23.1 21.2 23.8 20.7 23.8 19.9C23.8 18.9 22.8 18.5 21.6 18.1C20.1 17.6 18.5 16.9 18.5 15C18.5 13.2 19.9 12 22.1 12C23.9 12 25 12.8 25 12.8L24.3 14.3C24.3 14.3 23.3 13.6 22.1 13.6C21.1 13.6 20.4 14.1 20.4 14.9C20.4 15.8 21.3 16.2 22.5 16.6C24.1 17.1 25.7 17.9 25.7 19.9C25.7 21.8 24.2 22.8 22 22.8C20 22.8 18.7 21.7 18.7 21.7L19.2 20.3Z" fill="url(#logo-accent)"/>
+        <defs>
+          <linearGradient id="logo-bg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#1a1030"/>
+            <stop offset="100%" stop-color="#0d0820"/>
+          </linearGradient>
+          <linearGradient id="logo-accent" x1="18" y1="12" x2="26" y2="23" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#a78bfa"/>
+            <stop offset="100%" stop-color="#6c63ff"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="logo-text">ASS</span>
+      <span class="logo-tag">App Service Server</span>
     </a>
-    <ul class="nav__links">
-      <li><a href="#features">Características</a></li>
+
+    <ul class="nav__links" id="navLinks">
+      <li><a href="#features">Módulos</a></li>
+      <li><a href="#compare">Comparativa</a></li>
       <li><a href="#install">Instalación</a></li>
-      <li><a href="#config">Configuración</a></li>
       <li><a href="#download">Descargar</a></li>
-      <li><a href="https://github.com/BJZR/ass-src" target="_blank" class="nav__gh">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.1.82-.26.82-.58v-2.03c-3.34.72-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.23 1.84 1.23 1.07 1.84 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
-        GitHub
-      </a></li>
+      <li>
+        <a href="https://github.com/ass-project/ass-src" target="_blank" class="nav__gh">
+          <!-- GitHub icon SVG propio -->
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 0C4.477 0 0 4.477 0 10c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.463-1.11-1.463-.908-.62.069-.607.069-.607 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0110 4.836a9.59 9.59 0 012.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C17.137 18.163 20 14.418 20 10c0-5.523-4.477-10-10-10z"/>
+          </svg>
+          GitHub
+        </a>
+      </li>
     </ul>
-    <button class="nav__hamburger" id="hamburger" aria-label="Menú">
+
+    <button class="nav__hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
+
   </div>
 </nav>
 
-<!-- ═══════════════════ HERO ═══════════════════ -->
-<section class="hero">
-  <div class="hero__bg">
-    <div class="grid-lines"></div>
-    <div class="glow glow--blue"></div>
-    <div class="glow glow--purple"></div>
+<!-- ════════════════════ HERO ════════════════════ -->
+<section class="hero" id="home">
+  <div class="hero__bg" aria-hidden="true">
+    <div class="grid-overlay"></div>
+    <div class="orb orb--1"></div>
+    <div class="orb orb--2"></div>
+    <div class="orb orb--3"></div>
   </div>
+
   <div class="container hero__content">
     <div class="hero__badge">
-      <span class="badge__dot"></span>
-      Escrito en Rust · v0.1.0 · MIT License
+      <span class="badge__pulse"></span>
+      Rust · v0.1.0 · Licencia MIT
     </div>
+
     <h1 class="hero__title">
       Un binario.<br>
-      <span class="gradient-text">Cero dependencias.</span><br>
+      <span class="text-gradient">Cero dependencias.</span><br>
       Todo tu servidor.
     </h1>
+
     <p class="hero__sub">
-      ASS reemplaza Nginx, Certbot, PM2 y ngrok con un único ejecutable de <strong>6.5 MB</strong>.
+      <strong>ASS</strong> (App Service Server) reemplaza Nginx, Certbot, PM2 y ngrok
+      con un único ejecutable de <strong>6.5 MB</strong> escrito en Rust.
       Proxy inverso, TLS automático, supervisión de procesos, firewall y túneles,
       todo desde un solo <code>ass.toml</code>.
     </p>
-    <div class="hero__actions">
+
+    <div class="hero__cta">
       <a href="#install" class="btn btn--primary">
         Empezar ahora
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 8H13M8 3L13 8L8 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </a>
-      <a href="#download" class="btn btn--ghost">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      <a href="#download" class="btn btn--outline">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 2V11M4 7L8 11L12 7M2 13H14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
         Descargar
       </a>
     </div>
 
     <!-- Terminal animada -->
-    <div class="hero__terminal">
-      <div class="terminal__bar">
-        <span class="dot dot--red"></span>
-        <span class="dot dot--yellow"></span>
-        <span class="dot dot--green"></span>
-        <span class="terminal__title">bash</span>
+    <div class="terminal" role="img" aria-label="Ejemplo de uso de ASS en terminal">
+      <div class="terminal__chrome">
+        <div class="terminal__dots">
+          <span class="dot dot--close"></span>
+          <span class="dot dot--min"></span>
+          <span class="dot dot--max"></span>
+        </div>
+        <span class="terminal__label">bash — ass</span>
+        <div class="terminal__spacer"></div>
       </div>
       <div class="terminal__body">
         <div class="terminal__line">
-          <span class="t-prompt">$</span>
-          <span class="t-cmd typing">curl -fsSL https://BJZR.github.io/ass-deploy/install.sh | bash</span>
+          <span class="t-ps">❯</span>
+          <span class="t-cmd" id="heroCmd">curl -fsSL https://tu-usuario.github.io/ass-deploy/install.sh | bash</span>
         </div>
-        <div class="terminal__output">
-          <span class="t-info">▶ Detectando plataforma: linux/amd64</span><br>
-          <span class="t-info">▶ Descargando ss v0.1.0...</span><br>
-          <span class="t-ok">✓ SS instalado en /usr/local/bin/ass</span>
+        <div class="terminal__out">
+          <div><span class="t-dim">▶</span> Detectando plataforma: <span class="t-ok">linux/amd64</span></div>
+          <div><span class="t-dim">▶</span> Descargando ass v0.1.0...</div>
+          <div><span class="t-ok">✓</span> ASS instalado en <span class="t-path">/usr/local/bin/ass</span></div>
         </div>
-        <div class="terminal__line terminal__line--mt">
-          <span class="t-prompt">$</span>
-          <span class="t-cmd">ss init &amp;&amp; ass start</span>
+        <div class="terminal__line terminal__line--gap">
+          <span class="t-ps">❯</span>
+          <span class="t-cmd">ass init &amp;&amp; ass start</span>
         </div>
-        <div class="terminal__output">
-          <span class="t-purple">  ███████╗███████╗  ASS v0.1.0</span><br>
-          <span class="t-purple">  ██╔════╝██╔════╝  Server Service</span><br>
-          <span class="t-purple">  ███████╗███████╗</span><br>
-          <span class="t-ok">  → mi-api @ api.ejemplo.com (:8080)</span><br>
-          <span class="t-ok">  → frontend @ ejemplo.com (static)</span>
+        <div class="terminal__out">
+          <div class="t-banner">  ░█████╗░░██████╗░██████╗</div>
+          <div class="t-banner">  ██╔══██╗██╔════╝██╔════╝  ASS v0.1.0</div>
+          <div class="t-banner">  ███████║╚█████╗░╚█████╗░  App Service Server</div>
+          <div class="t-banner">  ██╔══██║░╚═══██╗░╚═══██╗</div>
+          <div><span class="t-ok">  →</span> mi-api  @ api.ejemplo.com  <span class="t-dim">(:8080)</span></div>
+          <div><span class="t-ok">  →</span> frontend @ ejemplo.com  <span class="t-dim">(static)</span></div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════════ STATS ═══════════════════ -->
-<section class="stats">
-  <div class="container stats__grid">
-    <div class="stat">
-      <div class="stat__value">6.5 <span>MB</span></div>
-      <div class="stat__label">Binario completo</div>
+<!-- ════════════════════ STATS ════════════════════ -->
+<div class="stats-bar">
+  <div class="container stats-bar__inner">
+    <div class="stat-item">
+      <span class="stat-item__val">6.5<span>MB</span></span>
+      <span class="stat-item__lbl">Binario completo</span>
     </div>
-    <div class="stat">
-      <div class="stat__value">&lt;5 <span>MB</span></div>
-      <div class="stat__label">RAM en idle</div>
+    <div class="stat-sep"></div>
+    <div class="stat-item">
+      <span class="stat-item__val">&lt;5<span>MB</span></span>
+      <span class="stat-item__lbl">RAM en idle</span>
     </div>
-    <div class="stat">
-      <div class="stat__value">7 <span>módulos</span></div>
-      <div class="stat__label">Integrados</div>
+    <div class="stat-sep"></div>
+    <div class="stat-item">
+      <span class="stat-item__val">7<span>módulos</span></span>
+      <span class="stat-item__lbl">Integrados</span>
     </div>
-    <div class="stat">
-      <div class="stat__value">0 <span>deps</span></div>
-      <div class="stat__label">Runtime externo</div>
+    <div class="stat-sep"></div>
+    <div class="stat-item">
+      <span class="stat-item__val">0<span>deps</span></span>
+      <span class="stat-item__lbl">Runtime externo</span>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat-item">
+      <span class="stat-item__val">5<span>plataformas</span></span>
+      <span class="stat-item__lbl">Soportadas</span>
     </div>
   </div>
-</section>
+</div>
 
-<!-- ═══════════════════ FEATURES ═══════════════════ -->
-<section class="features" id="features">
+<!-- ════════════════════ FEATURES ════════════════════ -->
+<section class="features section" id="features">
   <div class="container">
-    <div class="section-header">
-      <span class="section-tag">Módulos</span>
-      <h2>Todo lo que necesitas, integrado</h2>
-      <p>Cada módulo está diseñado para funcionar sin configuración extra. Activa lo que necesitas en <code>ass.toml</code>.</p>
+    <div class="section-head">
+      <span class="section-pill">Módulos</span>
+      <h2>Todo integrado, nada extra</h2>
+      <p>Activa lo que necesitas en <code>ass.toml</code>. Cada módulo funciona sin configuración adicional.</p>
     </div>
 
-    <div class="features__grid">
+    <div class="feat-grid">
 
-      <div class="feature-card feature-card--accent">
-        <div class="feature-card__icon">🔀</div>
-        <h3>Proxy inverso de alto rendimiento</h3>
-        <p>Motor HTTP/1.1 y HTTP/2 nativo con <strong>hyper + tokio</strong>. Enrutamiento por dominio, subdominio y wildcard (<code>*.app.com</code>). Servido de archivos estáticos con soporte SPA.</p>
-        <ul class="feature-list">
-          <li>Enrutamiento por dominio exacto o wildcard</li>
-          <li>Cabeceras X-Forwarded-* automáticas</li>
-          <li>Archivos estáticos con fallback SPA</li>
-          <li>Socket Unix como destino de proxy</li>
-        </ul>
+      <!-- Proxy inverso -->
+      <div class="feat-card feat-card--wide reveal">
+        <div class="feat-card__icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="6" cy="14" r="3" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="22" cy="7" r="3" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="22" cy="21" r="3" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M9 14H16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M16 14L19 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M16 14L19 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="16" cy="14" r="2" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="feat-card__body">
+          <h3>Proxy inverso de alto rendimiento</h3>
+          <p>Motor HTTP/1.1 nativo con <strong>hyper + tokio</strong>. Enrutamiento por dominio exacto o wildcard (<code>*.app.com</code>), servido de estáticos con fallback SPA y headers X-Forwarded automáticos.</p>
+          <ul class="feat-list">
+            <li>Enrutamiento por dominio y wildcard</li>
+            <li>Archivos estáticos + fallback SPA</li>
+            <li>Timeout y pool de conexiones configurable</li>
+            <li>Socket Unix como destino</li>
+          </ul>
+        </div>
       </div>
 
-      <div class="feature-card">
-        <div class="feature-card__icon">🔐</div>
-        <h3>TLS automático</h3>
-        <p>Cliente ACME integrado. Emite y renueva certificados de <strong>Let's Encrypt</strong> o <strong>ZeroSSL</strong> sin intervención manual. Renovación automática 30 días antes de expirar.</p>
-        <ul class="feature-list">
-          <li>ACME HTTP-01 nativo</li>
-          <li>SNI dinámico multi-dominio</li>
-          <li>Renovación automática</li>
-          <li>Redirect HTTP → HTTPS</li>
-        </ul>
+      <!-- TLS -->
+      <div class="feat-card reveal">
+        <div class="feat-card__icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="13" width="18" height="12" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M9 13V9C9 6.239 11.239 4 14 4C16.761 4 19 6.239 19 9V13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="14" cy="19" r="2" fill="currentColor"/>
+            <path d="M14 21V23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="feat-card__body">
+          <h3>TLS automático</h3>
+          <p>Cliente ACME integrado para <strong>Let's Encrypt</strong> y <strong>ZeroSSL</strong>. Emite y renueva sin intervención, SNI dinámico multi-dominio.</p>
+          <ul class="feat-list">
+            <li>ACME HTTP-01 nativo</li>
+            <li>Renovación automática a 30 días</li>
+            <li>SNI dinámico sin reinicio</li>
+            <li>Redirect HTTP → HTTPS</li>
+          </ul>
+        </div>
       </div>
 
-      <div class="feature-card">
-        <div class="feature-card__icon">⚙️</div>
-        <h3>Gestión de procesos</h3>
-        <p>Supervisor integrado con reinicio automático ante fallos, límite de reintentos configurable y logs rotativos por app. Equivale a PM2 o Supervisor.</p>
-        <ul class="feature-list">
-          <li>Reinicio automático en fallos</li>
-          <li>Señales stop / restart / reload (SIGHUP)</li>
-          <li>Logs por app con rotación diaria</li>
-          <li>Variables de entorno por proceso</li>
-        </ul>
+      <!-- Procesos -->
+      <div class="feat-card reveal">
+        <div class="feat-card__icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="6" width="22" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M3 11H25" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="7" cy="8.5" r="1" fill="currentColor"/>
+            <circle cx="11" cy="8.5" r="1" fill="currentColor"/>
+            <circle cx="15" cy="8.5" r="1" fill="currentColor"/>
+            <path d="M8 15L11 18L20 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="feat-card__body">
+          <h3>Gestión de procesos</h3>
+          <p>Supervisor integrado equivalente a PM2. Reinicio automático ante fallos, logs rotativos por app, señales stop / restart / reload.</p>
+          <ul class="feat-list">
+            <li>Reinicio con backoff configurable</li>
+            <li>Logs por app con rotación diaria</li>
+            <li>Variables de entorno por proceso</li>
+            <li>SIGHUP para reload graceful</li>
+          </ul>
+        </div>
       </div>
 
-      <div class="feature-card">
-        <div class="feature-card__icon">🔨</div>
-        <h3>Build engine</h3>
-        <p>Git clone/pull automático + ejecución de comandos de build. Detecta cambios en el repositorio y reconstruye + reinicia la app sin intervención humana.</p>
-        <ul class="feature-list">
-          <li>git clone + pull automático</li>
-          <li>Cualquier comando de build</li>
-          <li>Auto-rebuild en nuevos commits</li>
-          <li>Poll interval configurable</li>
-        </ul>
+      <!-- Build engine -->
+      <div class="feat-card reveal">
+        <div class="feat-card__icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 20L8 16L12 20L20 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="22" cy="6" r="3" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M22 9V24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="2 2"/>
+          </svg>
+        </div>
+        <div class="feat-card__body">
+          <h3>Build engine</h3>
+          <p>Git clone/pull automático + cualquier comando de build. Detecta cambios en el repo y reconstruye sin intervención humana.</p>
+          <ul class="feat-list">
+            <li>git clone + pull automático</li>
+            <li>Cualquier comando de build</li>
+            <li>Auto-rebuild en nuevos commits</li>
+            <li>Poll interval configurable</li>
+          </ul>
+        </div>
       </div>
 
-      <div class="feature-card">
-        <div class="feature-card__icon">🛡️</div>
-        <h3>Firewall de aplicación</h3>
-        <p>Filtrado de IPs con CIDR, rate limiting por IP, bloqueo de requests sin Host header y límite de tamaño de body. Headers de seguridad automáticos (HSTS, CSP…).</p>
-        <ul class="feature-list">
-          <li>Allowlist / blocklist CIDR</li>
-          <li>Rate limiting por IP (req/seg)</li>
-          <li>Headers de seguridad automáticos</li>
-          <li>Límite de body configurable</li>
-        </ul>
+      <!-- Firewall -->
+      <div class="feat-card reveal">
+        <div class="feat-card__icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 3L4 7V14C4 19.523 8.477 24 14 24C19.523 24 24 19.523 24 14V7L14 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M10 14L13 17L18 11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="feat-card__body">
+          <h3>Firewall de aplicación</h3>
+          <p>Filtrado CIDR, rate limiting por IP con governor, bloqueo de requests sin Host y límite de body. Headers de seguridad automáticos.</p>
+          <ul class="feat-list">
+            <li>Allowlist / blocklist CIDR IPv4/IPv6</li>
+            <li>Rate limiting por IP (req/seg)</li>
+            <li>HSTS, CSP, X-Frame-Options</li>
+            <li>Límite de body configurable</li>
+          </ul>
+        </div>
       </div>
 
-      <div class="feature-card">
-        <div class="feature-card__icon">🌐</div>
-        <h3>Túneles NAT bypass</h3>
-        <p>Expón servicios locales detrás de CGNAT o IP dinámica sin ngrok. Conexión WebSocket persistente hacia un servidor relay con reconexión automática.</p>
-        <ul class="feature-list">
-          <li>WebSocket hacia relay propio</li>
-          <li>Reconexión con backoff exponencial</li>
-          <li>Soporte TCP / HTTP / HTTPS</li>
-          <li>Múltiples túneles simultáneos</li>
-        </ul>
+      <!-- Túneles -->
+      <div class="feat-card reveal">
+        <div class="feat-card__icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 14C3 14 6 8 14 8C22 8 25 14 25 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M3 14C3 14 6 20 14 20C22 20 25 14 25 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="14" cy="14" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M14 10.5V8M14 20V17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="feat-card__body">
+          <h3>Túneles NAT bypass</h3>
+          <p>Expón servicios locales detrás de CGNAT o IP dinámica. WebSocket persistente hacia relay propio con reconexión automática.</p>
+          <ul class="feat-list">
+            <li>WebSocket hacia relay propio</li>
+            <li>Reconexión con backoff exponencial</li>
+            <li>Soporte TCP / HTTP / HTTPS</li>
+            <li>Múltiples túneles simultáneos</li>
+          </ul>
+        </div>
       </div>
 
-      <div class="feature-card">
-        <div class="feature-card__icon">🔄</div>
-        <h3>Self-updater</h3>
-        <p>El comando <code>ss update</code> descarga la nueva versión, verifica la firma criptográfica <strong>Ed25519</strong> y reemplaza el ejecutable de forma atómica sin interrumpir los servicios activos.</p>
-        <ul class="feature-list">
-          <li>Verificación Ed25519</li>
-          <li>Reemplazo atómico del binario</li>
-          <li>Backup automático antes de actualizar</li>
-          <li>Soporte multi-canal (stable/beta)</li>
-        </ul>
+      <!-- Self-updater -->
+      <div class="feat-card reveal">
+        <div class="feat-card__icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 14C6 9.582 9.582 6 14 6C16.9 6 19.45 7.55 20.9 9.9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M22 14C22 18.418 18.418 22 14 22C11.1 22 8.55 20.45 7.1 18.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M22 6V10H18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M6 22V18H10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="feat-card__body">
+          <h3>Self-updater</h3>
+          <p><code>ass update</code> descarga la nueva versión, verifica la firma <strong>Ed25519</strong> y reemplaza el ejecutable de forma atómica sin detener los servicios.</p>
+          <ul class="feat-list">
+            <li>Verificación Ed25519</li>
+            <li>Reemplazo atómico del binario</li>
+            <li>Backup automático antes de actualizar</li>
+            <li>Canales stable / beta / nightly</li>
+          </ul>
+        </div>
       </div>
 
-      <div class="feature-card">
-        <div class="feature-card__icon">📄</div>
-        <h3>Config unificada</h3>
-        <p>Un único <code>ass.toml</code> o <code>ass.json</code> declara toda la infraestructura: rutas, apps, TLS, firewall, túneles y logging. Sin archivos dispersos.</p>
-        <ul class="feature-list">
-          <li>TOML o JSON indistintamente</li>
-          <li>Validación al inicio</li>
-          <li><code>ss init</code> genera el archivo de ejemplo</li>
-          <li><code>ss validate</code> sin levantar servicios</li>
-        </ul>
+      <!-- Config unificada -->
+      <div class="feat-card reveal">
+        <div class="feat-card__icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 4H18L24 10V24H7V4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M17 4V11H24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M11 15H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M11 19H17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="feat-card__body">
+          <h3>Configuración unificada</h3>
+          <p>Un solo <code>ass.toml</code> o <code>ass.json</code> declara toda la infraestructura. <code>ass init</code> genera el ejemplo, <code>ass validate</code> lo verifica.</p>
+          <ul class="feat-list">
+            <li>TOML o JSON indistintamente</li>
+            <li>Validación al inicio con errores claros</li>
+            <li>Hot reload con <code>ass reload</code></li>
+            <li>Múltiples apps en un archivo</li>
+          </ul>
+        </div>
       </div>
 
-    </div>
+    </div><!-- /feat-grid -->
   </div>
 </section>
 
-<!-- ═══════════════════ COMPARATIVA ═══════════════════ -->
-<section class="compare" id="compare">
+<!-- ════════════════════ COMPARATIVA ════════════════════ -->
+<section class="compare section" id="compare">
   <div class="container">
-    <div class="section-header">
-      <span class="section-tag">Comparativa</span>
-      <h2>SS vs. el stack tradicional</h2>
+    <div class="section-head">
+      <span class="section-pill">Comparativa</span>
+      <h2>ASS vs. el stack tradicional</h2>
+      <p>Lo que antes requería instalar y mantener 4 herramientas, ahora es un binario.</p>
     </div>
-    <div class="compare__table-wrap">
-      <table class="compare__table">
+
+    <div class="compare-wrap">
+      <table class="compare-table">
         <thead>
           <tr>
             <th>Característica</th>
-            <th class="col-ss">SS</th>
+            <th class="col-ass">
+              <span class="col-ass__label">
+                <svg width="14" height="14" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#6c63ff"/><path d="M7 22L11 11H13L17 22H15.4L14.4 19H9.6L8.6 22H7ZM10.2 17.5H13.8L12 12.5L10.2 17.5Z" fill="white"/><path d="M18.5 20.2C19.1 20.8 20.1 21.2 21.2 21.2C22.2 21.2 22.8 20.8 22.8 20C22.8 19.1 21.9 18.7 20.8 18.3C19.4 17.8 17.9 17.1 17.9 15.3C17.9 13.6 19.2 12.5 21.2 12.5C22.8 12.5 23.8 13.2 23.8 13.2L23.2 14.6C22.6 14.1 21.8 13.7 21.2 13.7C20.3 13.7 19.6 14.1 19.6 14.9C19.6 15.7 20.4 16.1 21.5 16.5C23 17 24.4 17.8 24.4 19.7C24.4 21.5 23 22.5 21 22.5C19.2 22.5 18 21.5 18 21.5L18.5 20.2Z" fill="white"/></svg>
+                ASS
+              </span>
+            </th>
             <th>Caddy</th>
             <th>Nginx + Certbot</th>
             <th>PM2 + Nginx</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>Binario único</td><td class="col-ss yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
-          <tr><td>TLS automático</td><td class="col-ss yes">✓</td><td class="yes">✓</td><td class="partial">Con Certbot</td><td class="partial">Con Certbot</td></tr>
-          <tr><td>Gestión de procesos</td><td class="col-ss yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="yes">✓</td></tr>
-          <tr><td>Build engine</td><td class="col-ss yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
-          <tr><td>Rate limiting</td><td class="col-ss yes">✓</td><td class="partial">Plugins</td><td class="partial">Módulo</td><td class="no">✗</td></tr>
-          <tr><td>Túneles NAT</td><td class="col-ss yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
-          <tr><td>Self-update</td><td class="col-ss yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="partial">Parcial</td></tr>
-          <tr><td>Config unificada</td><td class="col-ss yes">✓</td><td class="partial">Parcial</td><td class="no">✗</td><td class="no">✗</td></tr>
-          <tr><td>RAM en idle</td><td class="col-ss yes">~5 MB</td><td class="partial">~30 MB</td><td class="partial">~20 MB</td><td class="no">~80 MB</td></tr>
-          <tr><td>Tamaño binario</td><td class="col-ss yes">6.5 MB</td><td class="partial">~45 MB</td><td class="no">N/A</td><td class="no">N/A</td></tr>
+          <tr><td>Binario único</td>
+            <td class="col-ass"><span class="badge-yes">✓</span></td>
+            <td><span class="badge-yes">✓</span></td>
+            <td><span class="badge-no">✗</span></td>
+            <td><span class="badge-no">✗</span></td>
+          </tr>
+          <tr><td>TLS automático</td>
+            <td class="col-ass"><span class="badge-yes">✓</span></td>
+            <td><span class="badge-yes">✓</span></td>
+            <td><span class="badge-mid">Con Certbot</span></td>
+            <td><span class="badge-mid">Con Certbot</span></td>
+          </tr>
+          <tr><td>Gestión de procesos</td>
+            <td class="col-ass"><span class="badge-yes">✓</span></td>
+            <td><span class="badge-no">✗</span></td>
+            <td><span class="badge-no">✗</span></td>
+            <td><span class="badge-yes">✓</span></td>
+          </tr>
+          <tr><td>Build engine (git+build)</td>
+            <td class="col-ass"><span class="badge-yes">✓</span></td>
+            <td><span class="badge-no">✗</span></td>
+            <td><span class="badge-no">✗</span></td>
+            <td><span class="badge-no">✗</span></td>
+          </tr>
+          <tr><td>Rate limiting</td>
+            <td class="col-ass"><span class="badge-yes">✓</span></td>
+            <td><span class="badge-mid">Plugins</span></td>
+            <td><span class="badge-mid">Módulo</span></td>
+            <td><span class="badge-no">✗</span></td>
+          </tr>
+          <tr><td>Túneles NAT</td>
+            <td class="col-ass"><span class="badge-yes">✓</span></td>
+            <td><span class="badge-no">✗</span></td>
+            <td><span class="badge-no">✗</span></td>
+            <td><span class="badge-no">✗</span></td>
+          </tr>
+          <tr><td>Self-update firmado</td>
+            <td class="col-ass"><span class="badge-yes">✓</span></td>
+            <td><span class="badge-no">✗</span></td>
+            <td><span class="badge-no">✗</span></td>
+            <td><span class="badge-no">✗</span></td>
+          </tr>
+          <tr><td>Config unificada</td>
+            <td class="col-ass"><span class="badge-yes">✓</span></td>
+            <td><span class="badge-mid">Parcial</span></td>
+            <td><span class="badge-no">✗</span></td>
+            <td><span class="badge-no">✗</span></td>
+          </tr>
+          <tr><td>RAM en idle</td>
+            <td class="col-ass"><span class="badge-yes">~5 MB</span></td>
+            <td><span class="badge-mid">~30 MB</span></td>
+            <td><span class="badge-mid">~20 MB</span></td>
+            <td><span class="badge-no">~80 MB</span></td>
+          </tr>
+          <tr><td>Tamaño instalado</td>
+            <td class="col-ass"><span class="badge-yes">6.5 MB</span></td>
+            <td><span class="badge-mid">~45 MB</span></td>
+            <td><span class="badge-no">~15 MB+</span></td>
+            <td><span class="badge-no">~200 MB+</span></td>
+          </tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════════ INSTALACIÓN ═══════════════════ -->
-<section class="install" id="install">
+<!-- ════════════════════ INSTALACIÓN ════════════════════ -->
+<section class="install section" id="install">
   <div class="container">
-    <div class="section-header">
-      <span class="section-tag">Instalación</span>
+    <div class="section-head">
+      <span class="section-pill">Instalación</span>
       <h2>En marcha en 30 segundos</h2>
+      <p>Elige tu plataforma. El instalador detecta la arquitectura automáticamente.</p>
     </div>
 
     <div class="tabs" id="installTabs">
-      <div class="tabs__nav">
-        <button class="tab-btn active" data-tab="linux">🐧 Linux</button>
-        <button class="tab-btn" data-tab="macos">🍎 macOS</button>
-        <button class="tab-btn" data-tab="windows">🪟 Windows</button>
-        <button class="tab-btn" data-tab="docker">🐳 Docker</button>
+      <div class="tabs__nav" role="tablist">
+        <button class="tab-btn active" role="tab" data-tab="linux" aria-selected="true">
+          <!-- Tux / Linux penguin simplificado -->
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="8" cy="6" rx="4" ry="5" stroke="currentColor" stroke-width="1.4"/>
+            <circle cx="6.5" cy="5" r="0.8" fill="currentColor"/>
+            <circle cx="9.5" cy="5" r="0.8" fill="currentColor"/>
+            <path d="M6.5 7.5C7 8 9 8 9.5 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            <path d="M5 11C4 12 3 14 5 15H11C13 14 12 12 11 11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            <path d="M5.5 11V9M10.5 11V9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Linux
+        </button>
+        <button class="tab-btn" role="tab" data-tab="macos" aria-selected="false">
+          <!-- Apple icon simplificado -->
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11 4C11 4 11.5 2 10 1C8.5 0 7.5 2 7.5 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            <path d="M4.5 6C3 6 2 7.5 2 9.5C2 12.5 4 15 5.5 15C6.5 15 7 14.5 8 14.5C9 14.5 9.5 15 10.5 15C12 15 14 12.5 14 9.5C14 7.5 13 6 11.5 6C10.5 6 9.5 6.5 8 6.5C6.5 6.5 5.5 6 4.5 6Z" stroke="currentColor" stroke-width="1.4"/>
+          </svg>
+          macOS
+        </button>
+        <button class="tab-btn" role="tab" data-tab="windows" aria-selected="false">
+          <!-- Windows logo simplificado -->
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 2.5L7 1.8V7.5H1V2.5Z" opacity="0.9"/>
+            <path d="M8 1.7L15 0.7V7.5H8V1.7Z" opacity="0.9"/>
+            <path d="M1 8.5H7V14.2L1 13.5V8.5Z" opacity="0.9"/>
+            <path d="M8 8.5H15V15.3L8 14.3V8.5Z" opacity="0.9"/>
+          </svg>
+          Windows
+        </button>
+        <button class="tab-btn" role="tab" data-tab="docker" aria-selected="false">
+          <!-- Docker whale simplificado -->
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="6" width="3" height="2.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="6" y="6" width="3" height="2.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="10" y="6" width="3" height="2.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="6" y="3" width="3" height="2.5" rx="0.5" stroke="currentColor" stroke-width="1.2"/>
+            <path d="M1.5 9.5C1.5 9.5 1 11 3 11H13C14.5 11 15 10 15 9C15 8 14 8 14 8H13.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            <path d="M13 8C13 8 13.5 6 15 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+          Docker
+        </button>
       </div>
 
-      <div class="tab-panel active" id="tab-linux">
+      <!-- LINUX -->
+      <div class="tab-panel active" id="tab-linux" role="tabpanel">
         <div class="code-block">
-          <div class="code-block__header">
-            <span>Instalador automático (recomendado)</span>
-            <button class="copy-btn" data-copy="linux-auto">Copiar</button>
-          </div>
-          <pre id="linux-auto"><code><span class="t-comment"># Detecta plataforma y descarga el paquete correcto</span>
-curl -fsSL https://BJZR.github.io/ass-deploy/install.sh | bash</code></pre>
+          <div class="code-block__hdr"><span>Instalador automático <em>(recomendado)</em></span><button class="copy-btn" data-copy="c-linux-auto">Copiar</button></div>
+          <pre><code id="c-linux-auto">curl -fsSL https://tu-usuario.github.io/ass-deploy/install.sh | bash</code></pre>
         </div>
-
-        <div class="code-block code-block--mt">
-          <div class="code-block__header">
-            <span>Paquete .deb (Debian/Ubuntu)</span>
-            <button class="copy-btn" data-copy="linux-deb">Copiar</button>
+        <div class="install-alts">
+          <div class="code-block">
+            <div class="code-block__hdr"><span>.deb — Debian / Ubuntu / Mint</span><button class="copy-btn" data-copy="c-deb">Copiar</button></div>
+            <pre><code id="c-deb">wget https://tu-usuario.github.io/ass-deploy/packages/ass_0.1.0_amd64.deb
+sudo dpkg -i ass_0.1.0_amd64.deb</code></pre>
           </div>
-          <pre id="linux-deb"><code>wget https://BJZR.github.io/ass-deploy/packages/ss_0.1.0_amd64.deb
-sudo dpkg -i ss_0.1.0_amd64.deb</code></pre>
-        </div>
-
-        <div class="code-block code-block--mt">
-          <div class="code-block__header">
-            <span>Paquete .rpm (RHEL/Fedora/CentOS)</span>
-            <button class="copy-btn" data-copy="linux-rpm">Copiar</button>
+          <div class="code-block">
+            <div class="code-block__hdr"><span>.rpm — RHEL / Fedora / CentOS</span><button class="copy-btn" data-copy="c-rpm">Copiar</button></div>
+            <pre><code id="c-rpm">wget https://tu-usuario.github.io/ass-deploy/packages/ass-0.1.0-1.x86_64.rpm
+sudo rpm -i ass-0.1.0-1.x86_64.rpm</code></pre>
           </div>
-          <pre id="linux-rpm"><code>wget https://BJZR.github.io/ass-deploy/packages/ss-0.1.0-1.x86_64.rpm
-sudo rpm -i ss-0.1.0-1.x86_64.rpm</code></pre>
-        </div>
-
-        <div class="code-block code-block--mt">
-          <div class="code-block__header">
-            <span>AppImage (portable, auto-actualizable)</span>
-            <button class="copy-btn" data-copy="linux-appimage">Copiar</button>
+          <div class="code-block">
+            <div class="code-block__hdr"><span>AppImage — cualquier distro (auto-update)</span><button class="copy-btn" data-copy="c-appimage">Copiar</button></div>
+            <pre><code id="c-appimage">wget https://tu-usuario.github.io/ass-deploy/packages/ASS-0.1.0-x86_64.AppImage
+chmod +x ASS-0.1.0-x86_64.AppImage
+./ASS-0.1.0-x86_64.AppImage</code></pre>
           </div>
-          <pre id="linux-appimage"><code>wget https://BJZR.github.io/ass-deploy/packages/SS-0.1.0-x86_64.AppImage
-chmod +x SS-0.1.0-x86_64.AppImage
-./SS-0.1.0-x86_64.AppImage</code></pre>
-        </div>
-
-        <div class="code-block code-block--mt">
-          <div class="code-block__header">
-            <span>Binario directo</span>
-            <button class="copy-btn" data-copy="linux-bin">Copiar</button>
+          <div class="code-block">
+            <div class="code-block__hdr"><span>Binario directo</span><button class="copy-btn" data-copy="c-bin-linux">Copiar</button></div>
+            <pre><code id="c-bin-linux">wget https://tu-usuario.github.io/ass-deploy/packages/ass-linux-amd64.bin
+chmod +x ass-linux-amd64.bin
+sudo mv ass-linux-amd64.bin /usr/local/bin/ass</code></pre>
           </div>
-          <pre id="linux-bin"><code>wget https://BJZR.github.io/ass-deploy/packages/ss-linux-amd64.bin
-chmod +x ss-linux-amd64.bin
-sudo mv ss-linux-amd64.bin /usr/local/bin/ass</code></pre>
-        </div>
-      </div>
-
-      <div class="tab-panel" id="tab-macos">
-        <div class="code-block">
-          <div class="code-block__header">
-            <span>Instalador automático</span>
-            <button class="copy-btn" data-copy="mac-auto">Copiar</button>
-          </div>
-          <pre id="mac-auto"><code>curl -fsSL https://BJZR.github.io/ass-deploy/install.sh | bash</code></pre>
-        </div>
-        <div class="code-block code-block--mt">
-          <div class="code-block__header">
-            <span>Binario directo (Apple Silicon)</span>
-            <button class="copy-btn" data-copy="mac-arm">Copiar</button>
-          </div>
-          <pre id="mac-arm"><code>curl -L https://BJZR.github.io/ass-deploy/packages/ss-darwin-arm64.bin -o ss
-chmod +x ss && sudo mv ss /usr/local/bin/</code></pre>
-        </div>
-        <div class="code-block code-block--mt">
-          <div class="code-block__header">
-            <span>Binario directo (Intel)</span>
-            <button class="copy-btn" data-copy="mac-x64">Copiar</button>
-          </div>
-          <pre id="mac-x64"><code>curl -L https://BJZR.github.io/ass-deploy/packages/ss-darwin-amd64.bin -o ss
-chmod +x ss && sudo mv ss /usr/local/bin/</code></pre>
         </div>
       </div>
 
-      <div class="tab-panel" id="tab-windows">
+      <!-- MACOS -->
+      <div class="tab-panel" id="tab-macos" role="tabpanel">
         <div class="code-block">
-          <div class="code-block__header">
-            <span>PowerShell (recomendado)</span>
-            <button class="copy-btn" data-copy="win-ps">Copiar</button>
-          </div>
-          <pre id="win-ps"><code>irm https://BJZR.github.io/ass-deploy/install.ps1 | iex</code></pre>
+          <div class="code-block__hdr"><span>Instalador automático</span><button class="copy-btn" data-copy="c-mac-auto">Copiar</button></div>
+          <pre><code id="c-mac-auto">curl -fsSL https://tu-usuario.github.io/ass-deploy/install.sh | bash</code></pre>
         </div>
-        <div class="code-block code-block--mt">
-          <div class="code-block__header">
-            <span>Descarga directa .exe</span>
-            <button class="copy-btn" data-copy="win-exe">Copiar</button>
+        <div class="install-alts">
+          <div class="code-block">
+            <div class="code-block__hdr"><span>Apple Silicon (M1/M2/M3)</span><button class="copy-btn" data-copy="c-mac-arm">Copiar</button></div>
+            <pre><code id="c-mac-arm">curl -L https://tu-usuario.github.io/ass-deploy/packages/ass-darwin-arm64.bin -o ass
+chmod +x ass && sudo mv ass /usr/local/bin/</code></pre>
           </div>
-          <pre id="win-exe"><code><span class="t-comment"># Descargar ss.exe desde:</span>
-https://BJZR.github.io/ass-deploy/packages/ss-windows-amd64.exe
-
-<span class="t-comment"># Añadir al PATH y ejecutar:</span>
-ss.exe init
-ss.exe start</code></pre>
+          <div class="code-block">
+            <div class="code-block__hdr"><span>Intel x86_64</span><button class="copy-btn" data-copy="c-mac-x64">Copiar</button></div>
+            <pre><code id="c-mac-x64">curl -L https://tu-usuario.github.io/ass-deploy/packages/ass-darwin-amd64.bin -o ass
+chmod +x ass && sudo mv ass /usr/local/bin/</code></pre>
+          </div>
         </div>
       </div>
 
-      <div class="tab-panel" id="tab-docker">
+      <!-- WINDOWS -->
+      <div class="tab-panel" id="tab-windows" role="tabpanel">
         <div class="code-block">
-          <div class="code-block__header">
-            <span>Docker (imagen scratch, minimal)</span>
-            <button class="copy-btn" data-copy="docker-run">Copiar</button>
+          <div class="code-block__hdr"><span>PowerShell (recomendado)</span><button class="copy-btn" data-copy="c-win-ps">Copiar</button></div>
+          <pre><code id="c-win-ps">irm https://tu-usuario.github.io/ass-deploy/install.ps1 | iex</code></pre>
+        </div>
+        <div class="install-alts">
+          <div class="code-block">
+            <div class="code-block__hdr"><span>Descarga directa .exe</span><button class="copy-btn" data-copy="c-win-exe">Copiar</button></div>
+            <pre><code id="c-win-exe"># Descargar desde:
+https://tu-usuario.github.io/ass-deploy/packages/ass-windows-amd64.exe
+
+# Ejecutar:
+ass.exe init
+ass.exe start</code></pre>
           </div>
-          <pre id="docker-run"><code>docker run -d \
-  --name ss \
+        </div>
+      </div>
+
+      <!-- DOCKER -->
+      <div class="tab-panel" id="tab-docker" role="tabpanel">
+        <div class="code-block">
+          <div class="code-block__hdr"><span>docker run</span><button class="copy-btn" data-copy="c-docker-run">Copiar</button></div>
+          <pre><code id="c-docker-run">docker run -d \
+  --name ass \
   -p 80:80 -p 443:443 \
   -v $(pwd)/ass.toml:/etc/ass/ass.toml \
-  -v ss-certs:/etc/ass/certs \
-  ghcr.io/BJZR/ass:latest</code></pre>
+  -v ass-certs:/etc/ass/certs \
+  ghcr.io/ass-project/ass:latest</code></pre>
         </div>
-        <div class="code-block code-block--mt">
-          <div class="code-block__header">
-            <span>docker-compose.yml</span>
-            <button class="copy-btn" data-copy="docker-compose">Copiar</button>
-          </div>
-          <pre id="docker-compose"><code>services:
-  ss:
-    image: ghcr.io/BJZR/ass:latest
+        <div class="install-alts">
+          <div class="code-block">
+            <div class="code-block__hdr"><span>docker-compose.yml</span><button class="copy-btn" data-copy="c-compose">Copiar</button></div>
+            <pre><code id="c-compose">services:
+  ass:
+    image: ghcr.io/ass-project/ass:latest
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./ass.toml:/etc/ass/ass.toml
-      - ss-certs:/etc/ass/certs
+      - ass-certs:/etc/ass/certs
     restart: unless-stopped
 
 volumes:
-  ss-certs:</code></pre>
+  ass-certs:</code></pre>
+          </div>
         </div>
       </div>
 
@@ -425,236 +621,286 @@ volumes:
   </div>
 </section>
 
-<!-- ═══════════════════ CONFIG EJEMPLO ═══════════════════ -->
-<section class="config-section" id="config">
+<!-- ════════════════════ CONFIG ════════════════════ -->
+<section class="config-sec section" id="config">
   <div class="container">
-    <div class="section-header">
-      <span class="section-tag">Configuración</span>
+    <div class="section-head">
+      <span class="section-pill">Configuración</span>
       <h2>Un archivo, toda la infraestructura</h2>
-      <p>Genera el archivo de ejemplo con <code>ss init</code> y personalízalo.</p>
+      <p>Genera el ejemplo con <code>ass init</code> y personaliza lo que necesites.</p>
     </div>
 
     <div class="config-split">
       <div class="config-split__code">
         <div class="code-block">
-          <div class="code-block__header">
-            <span>ass.toml</span>
-            <button class="copy-btn" data-copy="config-example">Copiar</button>
-          </div>
-          <pre id="config-example"><code><span class="t-comment"># ─── Servidor ────────────────────────────</span>
+          <div class="code-block__hdr"><span>ass.toml</span><button class="copy-btn" data-copy="c-config">Copiar</button></div>
+          <pre><code id="c-config"><span class="s-comment"># ── Servidor ────────────────────────────────</span>
 [server]
-host = <span class="t-str">"0.0.0.0"</span>
-http_port = <span class="t-num">80</span>
-https_port = <span class="t-num">443</span>
-ssl_email = <span class="t-str">"admin@ejemplo.com"</span>
-force_https = <span class="t-bool">true</span>
+host = <span class="s-str">"0.0.0.0"</span>
+http_port  = <span class="s-num">80</span>
+https_port = <span class="s-num">443</span>
+ssl_email  = <span class="s-str">"admin@ejemplo.com"</span>
+force_https = <span class="s-bool">true</span>
 
-<span class="t-comment"># ─── App backend ─────────────────────────</span>
+<span class="s-comment"># ── App backend ──────────────────────────────</span>
 [[app]]
-name = <span class="t-str">"mi-api"</span>
-domain = <span class="t-str">"api.ejemplo.com"</span>
-repo = <span class="t-str">"https://github.com/usuario/mi-api"</span>
-build = <span class="t-str">"go build -o app ./cmd"</span>
-exec = <span class="t-str">"./app"</span>
-port = <span class="t-num">8080</span>
-auto_update = <span class="t-bool">true</span>
-security_headers = <span class="t-bool">true</span>
+name   = <span class="s-str">"mi-api"</span>
+domain = <span class="s-str">"api.ejemplo.com"</span>
+repo   = <span class="s-str">"https://github.com/usuario/mi-api"</span>
+build  = <span class="s-str">"go build -o app ./cmd"</span>
+exec   = <span class="s-str">"./app"</span>
+port   = <span class="s-num">8080</span>
+auto_update      = <span class="s-bool">true</span>
+security_headers = <span class="s-bool">true</span>
 
 [app.env]
-DATABASE_URL = <span class="t-str">"postgres://localhost/mydb"</span>
-APP_ENV = <span class="t-str">"production"</span>
+DATABASE_URL = <span class="s-str">"postgres://localhost/db"</span>
+APP_ENV      = <span class="s-str">"production"</span>
 
-<span class="t-comment"># ─── Frontend estático ───────────────────</span>
+<span class="s-comment"># ── Frontend estático ────────────────────────</span>
 [[app]]
-name = <span class="t-str">"frontend"</span>
-domain = <span class="t-str">"ejemplo.com"</span>
-domains = [<span class="t-str">"www.ejemplo.com"</span>]
+name    = <span class="s-str">"web"</span>
+domain  = <span class="s-str">"ejemplo.com"</span>
+domains = [<span class="s-str">"www.ejemplo.com"</span>]
 
 [[app.static_routes]]
-prefix = <span class="t-str">"/"</span>
-dir = <span class="t-str">"/var/www/dist"</span>
-compress = <span class="t-bool">true</span>
+prefix   = <span class="s-str">"/"</span>
+dir      = <span class="s-str">"/var/www/dist"</span>
+compress = <span class="s-bool">true</span>
 
-<span class="t-comment"># ─── Firewall ────────────────────────────</span>
+<span class="s-comment"># ── Firewall ─────────────────────────────────</span>
 [firewall]
-enabled = <span class="t-bool">true</span>
-rate_limit_rps = <span class="t-num">100</span>
-allowlist = [<span class="t-str">"10.0.0.0/8"</span>]
+enabled          = <span class="s-bool">true</span>
+rate_limit_rps   = <span class="s-num">100</span>
+rate_limit_burst = <span class="s-num">200</span>
+allowlist = [<span class="s-str">"10.0.0.0/8"</span>]
 
-<span class="t-comment"># ─── Túnel opcional ──────────────────────</span>
+<span class="s-comment"># ── Túnel (opcional) ─────────────────────────</span>
 [tunnel]
-enabled = <span class="t-bool">false</span>
-relay_server = <span class="t-str">"relay.ejemplo.com:7000"</span></code></pre>
+enabled      = <span class="s-bool">false</span>
+relay_server = <span class="s-str">"relay.ejemplo.com:7000"</span></code></pre>
         </div>
       </div>
 
       <div class="config-split__steps">
-        <div class="step">
-          <div class="step__num">1</div>
-          <div class="step__content">
+        <div class="step reveal">
+          <div class="step__num">01</div>
+          <div>
             <h4>Genera la configuración</h4>
-            <p>Ejecuta <code>ss init</code> para crear un <code>ass.toml</code> de ejemplo con todos los campos documentados.</p>
+            <p>Ejecuta <code>ass init</code> para crear un <code>ass.toml</code> de ejemplo con todos los campos documentados.</p>
           </div>
         </div>
-        <div class="step">
-          <div class="step__num">2</div>
-          <div class="step__content">
+        <div class="step reveal">
+          <div class="step__num">02</div>
+          <div>
             <h4>Define tus apps</h4>
-            <p>Cada bloque <code>[[app]]</code> declara un servicio: dominio, comando de build, proceso a supervisar y puerto.</p>
+            <p>Cada bloque <code>[[app]]</code> declara un servicio: dominio, comando de build, proceso y puerto interno.</p>
           </div>
         </div>
-        <div class="step">
-          <div class="step__num">3</div>
-          <div class="step__content">
+        <div class="step reveal">
+          <div class="step__num">03</div>
+          <div>
             <h4>Valida antes de arrancar</h4>
-            <p>Usa <code>ss validate</code> para detectar errores de configuración sin levantar ningún servicio.</p>
+            <p>Usa <code>ass validate</code> para detectar errores de configuración sin levantar ningún servicio.</p>
           </div>
         </div>
-        <div class="step">
-          <div class="step__num">4</div>
-          <div class="step__content">
-            <h4>Arranca todo</h4>
-            <p><code>ss start</code> provisiona certificados TLS, compila tus apps y activa el proxy. Todo en un comando.</p>
+        <div class="step reveal">
+          <div class="step__num">04</div>
+          <div>
+            <h4>Arranca todo con un comando</h4>
+            <p><code>ass start</code> provisiona TLS, compila tus apps y activa el proxy. Todo de una vez.</p>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </section>
 
-<!-- ═══════════════════ DOWNLOAD ═══════════════════ -->
-<section class="download" id="download">
+<!-- ════════════════════ DOWNLOAD ════════════════════ -->
+<section class="download section" id="download">
   <div class="container">
-    <div class="section-header">
-      <span class="section-tag">Descargas</span>
+    <div class="section-head">
+      <span class="section-pill">Descargas</span>
       <h2>Elige tu plataforma</h2>
-      <p>Todos los paquetes están firmados con Ed25519. Verifica con <code>ss verify &lt;archivo&gt;</code>.</p>
+      <p>Todos los paquetes están firmados con Ed25519. Verifica integridad con <code>sha256sum -c checksums.txt</code>.</p>
     </div>
 
-    <div class="download__grid">
+    <div class="pkg-grid">
 
-      <div class="pkg-card">
-        <div class="pkg-card__icon">🐧</div>
+      <a class="pkg-card reveal" href="packages/ass_0.1.0_amd64.deb">
+        <div class="pkg-card__icon">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="10" fill="rgba(108,99,255,0.12)"/>
+            <path d="M18 8L26 12V20C26 24.418 22.418 28 18 28C13.582 28 10 24.418 10 20V12L18 8Z" stroke="#a78bfa" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M14 18L17 21L22 15" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
         <div class="pkg-card__info">
           <h4>.deb</h4>
-          <span class="pkg-card__sub">Debian · Ubuntu · Mint</span>
+          <p>Debian · Ubuntu · Mint</p>
         </div>
         <div class="pkg-card__meta">
-          <span class="pkg-card__size">~3.1 MB</span>
-          <span class="pkg-card__arch">amd64 / arm64</span>
+          <span class="pkg-sz">~3.1 MB</span>
+          <span class="pkg-arch">amd64 / arm64</span>
         </div>
-        <div class="pkg-card__actions">
-          <a href="packages/ss_0.1.0_amd64.deb" class="btn btn--small btn--primary">amd64</a>
-          <a href="packages/ss_0.1.0_arm64.deb" class="btn btn--small btn--ghost">arm64</a>
+        <div class="pkg-card__dl">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2V10M3 6L7 10L11 6M1 12H13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Descargar
         </div>
-      </div>
+      </a>
 
-      <div class="pkg-card">
-        <div class="pkg-card__icon">🎩</div>
+      <a class="pkg-card reveal" href="packages/ass-0.1.0-1.x86_64.rpm">
+        <div class="pkg-card__icon">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="10" fill="rgba(251,191,36,0.1)"/>
+            <circle cx="18" cy="18" r="9" stroke="#fbbf24" stroke-width="1.8"/>
+            <path d="M18 10V14M18 22V26M10 18H14M22 18H26" stroke="#fbbf24" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="18" cy="18" r="3" fill="#fbbf24" opacity="0.7"/>
+          </svg>
+        </div>
         <div class="pkg-card__info">
           <h4>.rpm</h4>
-          <span class="pkg-card__sub">RHEL · Fedora · CentOS · SUSE</span>
+          <p>RHEL · Fedora · CentOS · SUSE</p>
         </div>
         <div class="pkg-card__meta">
-          <span class="pkg-card__size">~3.2 MB</span>
-          <span class="pkg-card__arch">x86_64 / aarch64</span>
+          <span class="pkg-sz">~3.2 MB</span>
+          <span class="pkg-arch">x86_64 / aarch64</span>
         </div>
-        <div class="pkg-card__actions">
-          <a href="packages/ss-0.1.0-1.x86_64.rpm" class="btn btn--small btn--primary">x86_64</a>
-          <a href="packages/ss-0.1.0-1.aarch64.rpm" class="btn btn--small btn--ghost">aarch64</a>
+        <div class="pkg-card__dl">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2V10M3 6L7 10L11 6M1 12H13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Descargar
         </div>
-      </div>
+      </a>
 
-      <div class="pkg-card">
-        <div class="pkg-card__icon">📦</div>
+      <a class="pkg-card reveal" href="packages/ASS-0.1.0-x86_64.AppImage">
+        <div class="pkg-card__icon">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="10" fill="rgba(52,211,153,0.1)"/>
+            <rect x="9" y="11" width="18" height="14" rx="2.5" stroke="#34d399" stroke-width="1.8"/>
+            <path d="M14 18H22M18 14V22" stroke="#34d399" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="25" cy="12" r="3.5" fill="#34d399"/>
+            <path d="M23.5 12L24.5 13L26.5 11" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
         <div class="pkg-card__info">
           <h4>AppImage</h4>
-          <span class="pkg-card__sub">Cualquier distro Linux · Auto-update</span>
+          <p>Cualquier distro Linux · Auto-update</p>
         </div>
         <div class="pkg-card__meta">
-          <span class="pkg-card__size">~7.2 MB</span>
-          <span class="pkg-card__arch">x86_64</span>
+          <span class="pkg-sz">~7.2 MB</span>
+          <span class="pkg-arch">x86_64</span>
         </div>
-        <div class="pkg-card__actions">
-          <a href="packages/SS-0.1.0-x86_64.AppImage" class="btn btn--small btn--primary">Descargar</a>
+        <div class="pkg-card__dl">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2V10M3 6L7 10L11 6M1 12H13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Descargar
         </div>
-      </div>
+      </a>
 
-      <div class="pkg-card">
-        <div class="pkg-card__icon">🪟</div>
+      <a class="pkg-card reveal" href="packages/ass-windows-amd64.exe">
+        <div class="pkg-card__icon">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="10" fill="rgba(96,165,250,0.1)"/>
+            <path d="M11 12.5L17.5 11.5V17.5H11V12.5Z" fill="#60a5fa" opacity="0.8"/>
+            <path d="M18.5 11.3L26 10V17.5H18.5V11.3Z" fill="#60a5fa"/>
+            <path d="M11 18.5H17.5V24.5L11 23.5V18.5Z" fill="#60a5fa" opacity="0.8"/>
+            <path d="M18.5 18.5H26V26L18.5 25V18.5Z" fill="#60a5fa"/>
+          </svg>
+        </div>
         <div class="pkg-card__info">
           <h4>.exe</h4>
-          <span class="pkg-card__sub">Windows 10/11</span>
+          <p>Windows 10 / 11 · x64</p>
         </div>
         <div class="pkg-card__meta">
-          <span class="pkg-card__size">~7.8 MB</span>
-          <span class="pkg-card__arch">x86_64</span>
+          <span class="pkg-sz">~7.8 MB</span>
+          <span class="pkg-arch">x86_64</span>
         </div>
-        <div class="pkg-card__actions">
-          <a href="packages/ss-windows-amd64.exe" class="btn btn--small btn--primary">Descargar</a>
+        <div class="pkg-card__dl">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2V10M3 6L7 10L11 6M1 12H13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Descargar
         </div>
-      </div>
+      </a>
 
-      <div class="pkg-card">
-        <div class="pkg-card__icon">⚙️</div>
+      <a class="pkg-card reveal" href="packages/ass-linux-amd64.bin">
+        <div class="pkg-card__icon">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="10" fill="rgba(248,113,113,0.1)"/>
+            <rect x="9" y="9" width="18" height="18" rx="3" stroke="#f87171" stroke-width="1.8"/>
+            <path d="M13 18H23M18 13V23" stroke="#f87171" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
         <div class="pkg-card__info">
           <h4>Binario .bin</h4>
-          <span class="pkg-card__sub">Linux / macOS · portable</span>
+          <p>Linux / macOS · portable sin instalar</p>
         </div>
         <div class="pkg-card__meta">
-          <span class="pkg-card__size">~6.5 MB</span>
-          <span class="pkg-card__arch">amd64 / arm64 / darwin</span>
+          <span class="pkg-sz">~6.5 MB</span>
+          <span class="pkg-arch">amd64 / arm64 / darwin</span>
         </div>
-        <div class="pkg-card__actions">
-          <a href="packages/ss-linux-amd64.bin" class="btn btn--small btn--primary">linux</a>
-          <a href="packages/ss-darwin-arm64.bin" class="btn btn--small btn--ghost">macOS</a>
+        <div class="pkg-card__dl">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2V10M3 6L7 10L11 6M1 12H13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Descargar
         </div>
-      </div>
+      </a>
 
-      <div class="pkg-card pkg-card--source">
-        <div class="pkg-card__icon">🦀</div>
+      <a class="pkg-card pkg-card--src reveal" href="https://github.com/ass-project/ass-src" target="_blank">
+        <div class="pkg-card__icon">
+          <!-- Ferris el cangrejo de Rust (simplificado) -->
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="10" fill="rgba(251,146,60,0.1)"/>
+            <ellipse cx="18" cy="20" rx="8" ry="5" stroke="#fb923c" stroke-width="1.8"/>
+            <circle cx="13" cy="18" r="1.5" fill="#fb923c"/>
+            <circle cx="23" cy="18" r="1.5" fill="#fb923c"/>
+            <path d="M11 22L8 25" stroke="#fb923c" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M25 22L28 25" stroke="#fb923c" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M9 18L6 17" stroke="#fb923c" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M27 18L30 17" stroke="#fb923c" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M14 14L12 11" stroke="#fb923c" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M22 14L24 11" stroke="#fb923c" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
         <div class="pkg-card__info">
           <h4>Código fuente</h4>
-          <span class="pkg-card__sub">Rust 1.75+ · MIT License</span>
+          <p>Rust 1.75+ · Licencia MIT</p>
         </div>
         <div class="pkg-card__meta">
-          <span class="pkg-card__size">cargo build --release</span>
+          <span class="pkg-sz">cargo build --release</span>
         </div>
-        <div class="pkg-card__actions">
-          <a href="https://github.com/BJZR/ass-src" target="_blank" class="btn btn--small btn--ghost">GitHub →</a>
+        <div class="pkg-card__dl">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1C3.686 1 1 3.686 1 7c0 2.652 1.718 4.9 4.1 5.693.3.055.41-.13.41-.29v-1.017c-1.668.362-2.02-.803-2.02-.803-.273-.693-.666-.878-.666-.878-.544-.372.04-.364.04-.364.602.042.918.618.918.618.534.916 1.4.651 1.742.498.054-.387.209-.652.38-.802-1.332-.151-2.732-.666-2.732-2.963 0-.654.234-1.19.617-1.609-.062-.152-.267-.762.058-1.588 0 0 .503-.161 1.65.615A5.74 5.74 0 017 4.9c.503.002 1.01.068 1.484.202 1.146-.776 1.648-.615 1.648-.615.326.826.12 1.436.059 1.588.384.42.616.955.616 1.609 0 2.304-1.403 2.81-2.74 2.958.216.185.408.55.408 1.109v1.643c0 .161.109.348.413.29C11.284 11.897 13 9.651 13 7c0-3.314-2.686-6-6-6z" fill="currentColor"/></svg>
+          Ver en GitHub
         </div>
+      </a>
+
+    </div><!-- /pkg-grid -->
+
+    <details class="checksums">
+      <summary>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L8.5 5H13L9.5 7.5L11 11.5L7 9L3 11.5L4.5 7.5L1 5H5.5L7 1Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+        Checksums SHA-256
+      </summary>
+      <div class="code-block" style="margin-top:12px">
+        <pre><code id="checksums-text">Cargando checksums...</code></pre>
       </div>
+    </details>
 
-    </div>
-
-    <!-- Checksums -->
-    <div class="checksums">
-      <details>
-        <summary>Checksums SHA-256</summary>
-        <div class="code-block code-block--mt">
-          <pre><code id="checksums-text">Cargando checksums...</code></pre>
-        </div>
-      </details>
-    </div>
   </div>
 </section>
 
-<!-- ═══════════════════ SYSTEMD ═══════════════════ -->
-<section class="systemd-section">
+<!-- ════════════════════ SYSTEMD ════════════════════ -->
+<section class="systemd-sec section">
   <div class="container">
-    <div class="section-header">
-      <span class="section-tag">Producción</span>
+    <div class="section-head">
+      <span class="section-pill">Producción</span>
       <h2>Como servicio del sistema</h2>
+      <p>ASS funciona con systemd sin configuración extra. La unidad se instala automáticamente con los paquetes .deb y .rpm.</p>
     </div>
-    <div class="two-cols">
+    <div class="two-col">
       <div class="code-block">
-        <div class="code-block__header">
-          <span>systemd (Linux)</span>
-          <button class="copy-btn" data-copy="systemd-unit">Copiar</button>
-        </div>
-        <pre id="systemd-unit"><code><span class="t-comment"># /etc/systemd/system/ass.service</span>
-[Unit]
-Description=AASS - App Service Server
+        <div class="code-block__hdr"><span>/etc/systemd/system/ass.service</span><button class="copy-btn" data-copy="c-systemd">Copiar</button></div>
+        <pre><code id="c-systemd">[Unit]
+Description=ASS - App Service Server
+Documentation=https://tu-usuario.github.io/ass-deploy/
 After=network-online.target
 Wants=network-online.target
 
@@ -665,48 +911,59 @@ Restart=on-failure
 RestartSec=5
 User=root
 LimitNOFILE=65536
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target</code></pre>
       </div>
-      <div class="systemd-steps">
-        <div class="code-block">
-          <div class="code-block__header"><span>Activar servicio</span><button class="copy-btn" data-copy="systemd-cmds">Copiar</button></div>
-          <pre id="systemd-cmds"><code><span class="t-comment"># Instalar y activar</span>
+      <div class="code-block">
+        <div class="code-block__hdr"><span>Activar y gestionar</span><button class="copy-btn" data-copy="c-systemd-cmds">Copiar</button></div>
+        <pre><code id="c-systemd-cmds"># Instalar y activar al arranque
 sudo systemctl daemon-reload
-sudo systemctl enable --now ss
+sudo systemctl enable --now ass
 
-<span class="t-comment"># Verificar estado</span>
-systemctl status ss
+# Ver estado
+systemctl status ass
 
-<span class="t-comment"># Ver logs en tiempo real</span>
-journalctl -u ss -f
+# Logs en tiempo real
+journalctl -u ass -f
 
-<span class="t-comment"># Recargar config sin reiniciar</span>
-systemctl reload ss</code></pre>
-        </div>
+# Recargar configuración sin reiniciar
+systemctl reload ass
+
+# Ver logs de una app concreta
+ass logs mi-api</code></pre>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<!-- ════════════════════ FOOTER ════════════════════ -->
 <footer class="footer">
   <div class="container footer__inner">
     <div class="footer__brand">
-      <span class="logo-icon">⚡</span>
-      <span class="logo-text">SS</span>
-      <span class="footer__version">v0.1.0</span>
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="8" fill="url(#footer-bg)"/>
+        <path d="M7 22L11.5 10H13.5L18 22H16.2L15.1 19H9.9L8.8 22H7ZM10.5 17.5H14.5L12.5 12L10.5 17.5Z" fill="white"/>
+        <path d="M19.2 20.3C19.2 20.3 20.4 21.2 22 21.2C23.1 21.2 23.8 20.7 23.8 19.9C23.8 18.9 22.8 18.5 21.6 18.1C20.1 17.6 18.5 16.9 18.5 15C18.5 13.2 19.9 12 22.1 12C23.9 12 25 12.8 25 12.8L24.3 14.3C24.3 14.3 23.3 13.6 22.1 13.6C21.1 13.6 20.4 14.1 20.4 14.9C20.4 15.8 21.3 16.2 22.5 16.6C24.1 17.1 25.7 17.9 25.7 19.9C25.7 21.8 24.2 22.8 22 22.8C20 22.8 18.7 21.7 18.7 21.7L19.2 20.3Z" fill="url(#footer-acc)"/>
+        <defs>
+          <linearGradient id="footer-bg" x1="0" y1="0" x2="32" y2="32"><stop offset="0%" stop-color="#1a1030"/><stop offset="100%" stop-color="#0d0820"/></linearGradient>
+          <linearGradient id="footer-acc" x1="18" y1="12" x2="26" y2="23"><stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#6c63ff"/></linearGradient>
+        </defs>
+      </svg>
+      <div>
+        <span class="footer__name">ASS</span>
+        <span class="footer__full">App Service Server</span>
+      </div>
     </div>
-    <div class="footer__links">
-      <a href="https://github.com/BJZR/ass-src" target="_blank">Código fuente</a>
-      <a href="https://github.com/BJZR/ass-src/issues" target="_blank">Issues</a>
-      <a href="https://github.com/BJZR/ass-src/blob/main/LICENSE" target="_blank">MIT License</a>
-      <a href="https://github.com/BJZR/ass-src/releases" target="_blank">Releases</a>
-    </div>
-    <div class="footer__copy">
-      Construido con ❤️ y 🦀 Rust
-    </div>
+    <nav class="footer__links" aria-label="Footer">
+      <a href="https://github.com/ass-project/ass-src" target="_blank">Código fuente</a>
+      <a href="https://github.com/ass-project/ass-src/issues" target="_blank">Issues</a>
+      <a href="https://github.com/ass-project/ass-src/releases" target="_blank">Releases</a>
+      <a href="https://github.com/ass-project/ass-src/blob/main/LICENSE" target="_blank">MIT License</a>
+    </nav>
+    <p class="footer__copy">Hecho con ❤️ y 🦀 Rust</p>
   </div>
 </footer>
 

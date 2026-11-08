@@ -1,10 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#0a0a0f"/>
-  <text x="8" y="46" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="38" fill="url(#g)">SS</text>
+  <!-- Fondo con esquinas redondeadas -->
   <defs>
-    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6c63ff"/>
-      <stop offset="100%" stop-color="#a78bfa"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1a1030"/>
+      <stop offset="100%" stop-color="#0a0818"/>
+    </linearGradient>
+    <linearGradient id="acc" x1="20" y1="14" x2="52" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#6c63ff"/>
+    </linearGradient>
+    <linearGradient id="w" x1="0" y1="14" x2="0" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#d4d4f0"/>
     </linearGradient>
   </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <!-- A -->
+  <path d="M9 46L17 18H21L29 46H25.4L23.2 38H14.8L12.6 46H9Z M15.8 34H22.2L19 23L15.8 34Z" fill="url(#w)"/>
+  <!-- S S -->
+  <path d="M31 43.2C31 43.2 33.4 45 36.5 45C38.7 45 40 44 40 42.4C40 40.4 37.8 39.6 35.3 38.6C32.1 37.4 28.8 36 28.8 32.2C28.8 28.8 31.5 26.4 35.5 26.4C38.8 26.4 40.8 27.8 40.8 27.8L39.5 31.2C39.5 31.2 37.7 30 35.5 30C33.5 30 32.2 31 32.2 32.6C32.2 34.4 34.2 35.2 36.5 36.1C40 37.4 43.5 39 43.5 42.8C43.5 46.8 40.7 48.6 36.5 48.6C32.6 48.6 30 46.8 30 46.8L31 43.2Z" fill="url(#acc)"/>
+  <path d="M44 43.2C44 43.2 46.4 45 49.5 45C51.7 45 53 44 53 42.4C53 40.4 50.8 39.6 48.3 38.6C45.1 37.4 41.8 36 41.8 32.2C41.8 28.8 44.5 26.4 48.5 26.4C51.8 26.4 53.8 27.8 53.8 27.8L52.5 31.2C52.5 31.2 50.7 30 48.5 30C46.5 30 45.2 31 45.2 32.6C45.2 34.4 47.2 35.2 49.5 36.1C53 37.4 56.5 39 56.5 42.8C56.5 46.8 53.7 48.6 49.5 48.6C45.6 48.6 43 46.8 43 46.8L44 43.2Z" fill="url(#acc)" opacity="0.75"/>
 </svg>
