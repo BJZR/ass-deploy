@@ -121,7 +121,7 @@
       <div class="terminal__body">
         <div class="terminal__line">
           <span class="t-ps">❯</span>
-          <span class="t-cmd" id="heroCmd">curl -fsSL https://tu-usuario.github.io/ass-deploy/install.sh | bash</span>
+          <span class="t-cmd" id="heroCmd">curl -fsSL https://BJZR.github.io/ass-deploy/install.sh | bash</span>
         </div>
         <div class="terminal__out">
           <div><span class="t-dim">▶</span> Detectando plataforma: <span class="t-ok">linux/amd64</span></div>
@@ -137,6 +137,7 @@
           <div class="t-banner">  ██╔══██╗██╔════╝██╔════╝  ASS v0.1.0</div>
           <div class="t-banner">  ███████║╚█████╗░╚█████╗░  App Service Server</div>
           <div class="t-banner">  ██╔══██║░╚═══██╗░╚═══██╗</div>
+          <div class="t-banner">  ██   ██╗░░█████╗░█████╗</div>
           <div><span class="t-ok">  →</span> mi-api  @ api.ejemplo.com  <span class="t-dim">(:8080)</span></div>
           <div><span class="t-ok">  →</span> frontend @ ejemplo.com  <span class="t-dim">(static)</span></div>
         </div>
@@ -519,28 +520,28 @@
       <div class="tab-panel active" id="tab-linux" role="tabpanel">
         <div class="code-block">
           <div class="code-block__hdr"><span>Instalador automático <em>(recomendado)</em></span><button class="copy-btn" data-copy="c-linux-auto">Copiar</button></div>
-          <pre><code id="c-linux-auto">curl -fsSL https://tu-usuario.github.io/ass-deploy/install.sh | bash</code></pre>
+          <pre><code id="c-linux-auto">curl -fsSL https://BJZR.github.io/ass-deploy/install.sh | bash</code></pre>
         </div>
         <div class="install-alts">
           <div class="code-block">
             <div class="code-block__hdr"><span>.deb — Debian / Ubuntu / Mint</span><button class="copy-btn" data-copy="c-deb">Copiar</button></div>
-            <pre><code id="c-deb">wget https://tu-usuario.github.io/ass-deploy/packages/ass_0.1.0_amd64.deb
+            <pre><code id="c-deb">wget https://BJZR.github.io/ass-deploy/packages/ass_0.1.0_amd64.deb
 sudo dpkg -i ass_0.1.0_amd64.deb</code></pre>
           </div>
           <div class="code-block">
             <div class="code-block__hdr"><span>.rpm — RHEL / Fedora / CentOS</span><button class="copy-btn" data-copy="c-rpm">Copiar</button></div>
-            <pre><code id="c-rpm">wget https://tu-usuario.github.io/ass-deploy/packages/ass-0.1.0-1.x86_64.rpm
+            <pre><code id="c-rpm">wget https://BJZR.github.io/ass-deploy/packages/ass-0.1.0-1.x86_64.rpm
 sudo rpm -i ass-0.1.0-1.x86_64.rpm</code></pre>
           </div>
           <div class="code-block">
             <div class="code-block__hdr"><span>AppImage — cualquier distro (auto-update)</span><button class="copy-btn" data-copy="c-appimage">Copiar</button></div>
-            <pre><code id="c-appimage">wget https://tu-usuario.github.io/ass-deploy/packages/ASS-0.1.0-x86_64.AppImage
+            <pre><code id="c-appimage">wget https://BJZR.github.io/ass-deploy/packages/ASS-0.1.0-x86_64.AppImage
 chmod +x ASS-0.1.0-x86_64.AppImage
 ./ASS-0.1.0-x86_64.AppImage</code></pre>
           </div>
           <div class="code-block">
             <div class="code-block__hdr"><span>Binario directo</span><button class="copy-btn" data-copy="c-bin-linux">Copiar</button></div>
-            <pre><code id="c-bin-linux">wget https://tu-usuario.github.io/ass-deploy/packages/ass-linux-amd64.bin
+            <pre><code id="c-bin-linux">wget https://BJZR.github.io/ass-deploy/packages/ass-linux-amd64.bin
 chmod +x ass-linux-amd64.bin
 sudo mv ass-linux-amd64.bin /usr/local/bin/ass</code></pre>
           </div>
@@ -551,17 +552,17 @@ sudo mv ass-linux-amd64.bin /usr/local/bin/ass</code></pre>
       <div class="tab-panel" id="tab-macos" role="tabpanel">
         <div class="code-block">
           <div class="code-block__hdr"><span>Instalador automático</span><button class="copy-btn" data-copy="c-mac-auto">Copiar</button></div>
-          <pre><code id="c-mac-auto">curl -fsSL https://tu-usuario.github.io/ass-deploy/install.sh | bash</code></pre>
+          <pre><code id="c-mac-auto">curl -fsSL https://BJZR.github.io/ass-deploy/install.sh | bash</code></pre>
         </div>
         <div class="install-alts">
           <div class="code-block">
             <div class="code-block__hdr"><span>Apple Silicon (M1/M2/M3)</span><button class="copy-btn" data-copy="c-mac-arm">Copiar</button></div>
-            <pre><code id="c-mac-arm">curl -L https://tu-usuario.github.io/ass-deploy/packages/ass-darwin-arm64.bin -o ass
+            <pre><code id="c-mac-arm">curl -L https://BJZR.github.io/ass-deploy/packages/ass-darwin-arm64.bin -o ass
 chmod +x ass && sudo mv ass /usr/local/bin/</code></pre>
           </div>
           <div class="code-block">
             <div class="code-block__hdr"><span>Intel x86_64</span><button class="copy-btn" data-copy="c-mac-x64">Copiar</button></div>
-            <pre><code id="c-mac-x64">curl -L https://tu-usuario.github.io/ass-deploy/packages/ass-darwin-amd64.bin -o ass
+            <pre><code id="c-mac-x64">curl -L https://BJZR.github.io/ass-deploy/packages/ass-darwin-amd64.bin -o ass
 chmod +x ass && sudo mv ass /usr/local/bin/</code></pre>
           </div>
         </div>
@@ -571,7 +572,7 @@ chmod +x ass && sudo mv ass /usr/local/bin/</code></pre>
       <div class="tab-panel" id="tab-windows" role="tabpanel">
         <div class="code-block">
           <div class="code-block__hdr"><span>PowerShell (recomendado)</span><button class="copy-btn" data-copy="c-win-ps">Copiar</button></div>
-          <pre><code id="c-win-ps">irm https://tu-usuario.github.io/ass-deploy/install.ps1 | iex</code></pre>
+          <pre><code id="c-win-ps">irm https://BJZR.github.io/ass-deploy/install.ps1 | iex</code></pre>
         </div>
         <div class="install-alts">
           <div class="code-block">
